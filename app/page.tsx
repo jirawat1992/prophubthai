@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-
 import PropMatcher from "./components/PropMatcher";
 
 interface AccountDetail {
@@ -210,10 +209,6 @@ const propFirms: PropFirm[] = [
 ];
 
 export default function Home() {
-  const [selectedSize, setSelectedSize] = useState<string>("100K");
-  const [filterNews, setFilterNews] = useState<boolean>(false);
-  const [filterWeekend, setFilterWeekend] = useState<boolean>(false);
-  const [filterEA, setFilterEA] = useState<boolean>(false);
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
 
   const handleCopy = (code: string) => {
@@ -224,13 +219,6 @@ export default function Home() {
       setCopiedCode(null);
     }, 2000);
   };
-
-  const filteredFirms = propFirms.filter((firm) => {
-    if (filterNews && !firm.features.some((f) => f.includes("ข่าว"))) return false;
-    if (filterWeekend && !firm.features.some((f) => f.includes("ข้ามสัปดาห์"))) return false;
-    if (filterEA && !firm.features.some((f) => f.includes("EA"))) return false;
-    return true;
-  });
 
   return (
     <main className="min-h-screen bg-[#070b14] text-slate-100 selection:bg-cyan-500 selection:text-white pb-20">
@@ -257,7 +245,7 @@ export default function Home() {
       </header>
 
       {/* Hero Section */}
-      <section className="max-w-4xl mx-auto px-4 pt-10 pb-8 text-center">
+      <section className="max-w-4xl mx-auto px-4 pt-10 pb-4 text-center">
         <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-white leading-tight">
           เปรียบเทียบ <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">พอร์ตกองทุนที่ดีที่สุด</span>
         </h1>
@@ -266,73 +254,21 @@ export default function Home() {
         </p>
       </section>
 
-      {/* Filter Bar */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-10">
-        <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 backdrop-blur-xl shadow-xl flex flex-col md:flex-row items-center justify-between gap-6">
-          {/* Account Size Switcher */}
-          <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
-            <span className="text-xs sm:text-sm text-slate-400 font-medium whitespace-nowrap">
-              เลือกขนาดพอร์ตที่ต้องการสอบ:
-            </span>
-            <div className="flex bg-slate-950/70 p-1 rounded-xl border border-slate-800 w-full sm:w-auto justify-center">
-              {["10K", "50K", "100K", "200K"].map((size) => (
-                <button
-                  key={size}
-                  onClick={() => setSelectedSize(size)}
-                  className={`px-4 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200 ${
-                    selectedSize === size
-                      ? "bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/30 font-bold"
-                      : "text-slate-400 hover:text-white"
-                  }`}
-                >
-                  ${size}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Tag Filters */}
-          <div className="flex flex-wrap items-center gap-2 justify-center sm:justify-start">
-            <span className="text-xs text-slate-400 mr-1">ตัวกรอง:</span>
-            <button
-              onClick={() => setFilterNews(!filterNews)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${
-                filterNews
-                  ? "bg-blue-600/20 border-blue-500 text-blue-300"
-                  : "bg-slate-950/40 border-slate-800 text-slate-400 hover:border-slate-700"
-              }`}
-            >
-              📰 เทรดชนข่าวได้
-            </button>
-            <button
-              onClick={() => setFilterWeekend(!filterWeekend)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${
-                filterWeekend
-                  ? "bg-blue-600/20 border-blue-500 text-blue-300"
-                  : "bg-slate-950/40 border-slate-800 text-slate-400 hover:border-slate-700"
-              }`}
-            >
-              📅 ถือข้ามสัปดาห์ได้
-            </button>
-            <button
-              onClick={() => setFilterEA(!filterEA)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${
-                filterEA
-                  ? "bg-blue-600/20 border-blue-500 text-blue-300"
-                  : "bg-slate-950/40 border-slate-800 text-slate-400 hover:border-slate-700"
-              }`}
-            >
-              🤖 ใช้ EA ได้
-            </button>
-          </div>
-        </div>
-      </section>
+      {/* Smart Matcher Component */}
+      <PropMatcher />
 
       {/* Cards Grid */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12">
+        <div className="flex items-center justify-between mb-8 pb-4 border-b border-slate-800">
+          <div>
+            <h2 className="text-xl sm:text-2xl font-black text-white">10 กองทุนยอดนิยมที่แนะนำ</h2>
+            <p className="text-xs sm:text-sm text-slate-400 mt-1">คัดเลือกเฉพาะค่ายที่ได้มาตรฐาน ถอนเงินได้จริง และมีโปรโมชันพิเศษ</p>
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredFirms.map((firm) => {
-            const currentAccount = firm.accountSizes[selectedSize] || firm.accountSizes["100K"];
+          {propFirms.map((firm) => {
+            const currentAccount = firm.accountSizes["100K"];
 
             return (
               <div
@@ -357,7 +293,7 @@ export default function Home() {
 
                   {/* Price Block */}
                   <div className="mt-4 p-4 rounded-xl bg-slate-950/80 border border-slate-800/80 flex items-baseline justify-between">
-                    <span className="text-xs text-slate-400">ขนาด ${selectedSize}</span>
+                    <span className="text-xs text-slate-400">พอร์ตขนาด $100K</span>
                     <div className="text-right">
                       <span className="text-3xl font-extrabold text-white">${currentAccount.price}</span>
                     </div>
