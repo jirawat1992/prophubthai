@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 
+import PropMatcher from "./components/PropMatcher";
+
 interface AccountDetail {
   price: number;
   maxDailyLoss: number;
