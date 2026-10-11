@@ -287,35 +287,49 @@ export default function PropMatcher({
                 </div>
               </div>
 
-              {/* Profit Split */}
-              <div className="bg-slate-950/40 p-4 rounded-2xl border border-slate-800">
-                <span className="block text-xs font-bold text-slate-100 mb-3">
-                  💰 ส่วนแบ่งกำไร (Profit Split):
-                </span>
-                <div className="flex flex-wrap gap-2">
-                  {[
-                    { id: "all", label: "มาตรฐาน (80%+)" },
-                    { id: "90", label: "สูงสุด 90%+" },
-                    { id: "challenge_profit", label: "🎁 มีกำไรช่วงสอบ 15%" },
-                  ].map((ps) => {
-                    const active = filters.profitSplit === ps.id;
-                    return (
-                      <button
-                        key={ps.id}
-                        onClick={() => updateFilter("profitSplit", ps.id)}
-                        className={`py-2 px-3 rounded-xl text-xs font-bold border transition-all ${
-                          active
-                            ? "bg-cyan-500/25 border-cyan-400 text-cyan-200 shadow-sm"
-                            : "bg-slate-800/70 border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white"
-                        }`}
-                      >
-                        {ps.label}
-                      </button>
-                    );
-                  })}
+              {/* Profit Split & Challenge Profit Dropdowns */}
+          <div className="bg-slate-950/40 p-4 rounded-2xl border border-slate-800">
+            <span className="block text-xs font-bold text-slate-100 mb-3">
+              💰 ส่วนแบ่งกำไร & โบนัสช่วงสอบ:
+            </span>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {/* Dropdown ช่องที่ 1: ส่วนแบ่งกำไร */}
+              <div className="relative">
+                <select
+                  value={filters.profitSplit || "all"}
+                  onChange={(e) => updateFilter("profitSplit", e.target.value)}
+                  className="w-full appearance-none rounded-xl bg-slate-900 border border-slate-700/80 px-3.5 py-2.5 pr-9 text-xs font-semibold text-slate-200 hover:border-cyan-500/60 focus:border-cyan-400 focus:outline-none focus:ring-1 focus:ring-cyan-400/50 transition cursor-pointer"
+                >
+                  <option value="all">ส่วนแบ่งกำไร: 80%+</option>
+                  <option value="90">90%+</option>
+                  <option value="100">100%</option>
+                </select>
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400">
+                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+              </div>
+
+              {/* Dropdown ช่องที่ 2: กำไรช่วงสอบ */}
+              <div className="relative">
+                <select
+                  value={filters.evalProfit || "all"}
+                  onChange={(e) => updateFilter("evalProfit", e.target.value)}
+                  className="w-full appearance-none rounded-xl bg-slate-900 border border-slate-700/80 px-3.5 py-2.5 pr-9 text-xs font-semibold text-slate-200 hover:border-cyan-500/60 focus:border-cyan-400 focus:outline-none focus:ring-1 focus:ring-cyan-400/50 transition cursor-pointer"
+                >
+                  <option value="all">กำไรช่วงสอบ: ทั้งหมด</option>
+                  <option value="none">ไม่มีกำไรช่วงสอบ</option>
+                  <option value="has_eval">🎁 มีกำไรช่วงสอบ เฟส1 หรือเฟส2</option>
+                </select>
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400">
+                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                  </svg>
                 </div>
               </div>
             </div>
+          </div>
 
             {/* Drawdown & Payout */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -348,31 +362,29 @@ export default function PropMatcher({
 
               <div className="bg-slate-950/40 p-4 rounded-2xl border border-slate-800">
                 <span className="block text-xs font-bold text-slate-100 mb-3">
-                  ⏱️ รอบการถอนกำไร (Payout):
-                </span>
-                <div className="grid grid-cols-2 gap-2.5">
-                  {[
-                    { id: "all", label: "รอบปกติ (14 วัน)" },
-                    { id: "fast", label: "⚡ ถอนไวพิเศษ (5–8 วัน)" },
-                  ].map((po) => {
-                    const active = filters.payoutSpeed === po.id;
-                    return (
-                      <button
-                        key={po.id}
-                        onClick={() => updateFilter("payoutSpeed", po.id)}
-                        className={`py-2 px-3 rounded-xl text-xs font-bold border transition-all text-center ${
-                          active
-                            ? "bg-cyan-500/25 border-cyan-400 text-cyan-200"
-                            : "bg-slate-800/70 border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white"
-                        }`}
-                      >
-                        {po.label}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
+                {/* Payout Dropdown */}
+<div className="bg-slate-950/40 p-4 rounded-2xl border border-slate-800">
+  <span className="block text-xs font-bold text-slate-100 mb-3">
+    ⏱️ รอบการถอนกำไร (Payout):
+  </span>
+  <div className="relative">
+    <select
+      value={filters.payout || "all"}
+      onChange={(e) => updateFilter("payout", e.target.value)}
+      className="w-full appearance-none rounded-xl bg-slate-900 border border-slate-700/80 px-3.5 py-2.5 pr-9 text-xs font-semibold text-slate-200 hover:border-cyan-500/60 focus:border-cyan-400 focus:outline-none focus:ring-1 focus:ring-cyan-400/50 transition cursor-pointer"
+    >
+      <option value="all">รอบการถอน: ทั้งหมด</option>
+      <option value="14">รอบปกติ (14 วัน)</option>
+      <option value="fast">⚡ ถอนไวพิเศษ (5–8 วัน)</option>
+      <option value="on_demand">🚀 ถอนได้ทันที (On Demand)</option>
+    </select>
+    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400">
+      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+      </svg>
+    </div>
+  </div>
+</div>
 
             {/* Special Rules */}
             <div className="bg-slate-950/40 p-4 rounded-2xl border border-slate-800">
