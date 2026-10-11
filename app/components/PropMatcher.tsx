@@ -1,50 +1,46 @@
 "use client";
 
-import { useState } from "react";
+export interface FilterState {
+  modelType: string;
+  accountSize: string;
+  customSize: string;
+  paymentMethod: string;
+  allowNews: boolean;
+  allowWeekend: boolean;
+  allowEA: boolean;
+  showAdvanced: boolean;
+  drawdownType: string;
+  payoutSpeed: string;
+  noConsistencyRule: boolean;
+  platform: string;
+  profitSplit: string;
+  noMinDays: boolean;
+  noSlRequired: boolean;
+  scalingPlan: boolean;
+}
 
-export default function PropMatcher() {
-  // State พื้นฐาน
-  const [modelType, setModelType] = useState<string>("all");
-  const [accountSize, setAccountSize] = useState<string>("100K");
-  const [customSize, setCustomSize] = useState<string>("");
-  const [paymentMethod, setPaymentMethod] = useState<string>("all");
+interface PropMatcherProps {
+  filters: FilterState;
+  onFilterChange: (newFilters: FilterState) => void;
+  onReset: () => void;
+  resultCount: number;
+}
 
-  // State กฎการเทรดพื้นฐาน
-  const [allowNews, setAllowNews] = useState<boolean>(false);
-  const [allowWeekend, setAllowWeekend] = useState<boolean>(false);
-  const [allowEA, setAllowEA] = useState<boolean>(false);
-
-  // State ขั้นสูง (Advanced Filter)
-  const [showAdvanced, setShowAdvanced] = useState<boolean>(false);
-  const [drawdownType, setDrawdownType] = useState<string>("all");
-  const [payoutSpeed, setPayoutSpeed] = useState<string>("all");
-  const [noConsistencyRule, setNoConsistencyRule] = useState<boolean>(false);
-  const [platform, setPlatform] = useState<string>("all");
-  const [profitSplit, setProfitSplit] = useState<string>("all");
-  const [noMinDays, setNoMinDays] = useState<boolean>(false);
-  const [noSlRequired, setNoSlRequired] = useState<boolean>(false);
-  const [scalingPlan, setScalingPlan] = useState<boolean>(false);
-
-  const resetFilters = () => {
-    setModelType("all");
-    setAccountSize("100K");
-    setCustomSize("");
-    setPaymentMethod("all");
-    setAllowNews(false);
-    setAllowWeekend(false);
-    setAllowEA(false);
-    setShowAdvanced(false);
-    setDrawdownType("all");
-    setPayoutSpeed("all");
-    setNoConsistencyRule(false);
-    setPlatform("all");
-    setProfitSplit("all");
-    setNoMinDays(false);
-    setNoSlRequired(false);
-    setScalingPlan(false);
+export default function PropMatcher({
+  filters,
+  onFilterChange,
+  onReset,
+  resultCount,
+}: PropMatcherProps) {
+  const updateFilter = (key: keyof FilterState, value: any) => {
+    onFilterChange({
+      ...filters,
+      [key]: value,
+    });
   };
 
   const sizeOptions = [
+    { value: "all", label: "ทุกขนาดพอร์ต" },
     { value: "5K", label: "$5,000 (5K)" },
     { value: "10K", label: "$10,000 (10K)" },
     { value: "25K", label: "$25,000 (25K)" },
@@ -70,25 +66,25 @@ export default function PropMatcher() {
           <div>
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-500/15 text-cyan-300 text-xs font-bold mb-3 border border-cyan-500/30 shadow-[0_0_15px_rgba(6,182,212,0.15)]">
               <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
-              ⚡ SMART MATCHER
+              ⚡ SMART MATCHER (พบ {resultCount} กองทุนที่ตรงเงื่อนไข)
             </div>
             <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
               ค้นหากองทุนที่ตอบโจทย์สไตล์คุณ
             </h2>
             <p className="text-sm text-slate-300 mt-1 font-normal">
-              เลือกเงื่อนไขที่ต้องการ เพื่อหากองทุนที่คุ้มค่าและเหมาะกับระบบเทรดของคุณที่สุด
+              ปรับแต่งเงื่อนไขที่ต้องการ แล้วระบบจะตัดและแสดงเฉพาะกองทุนที่ผ่านเกณฑ์ทันที
             </p>
           </div>
 
           <button
-            onClick={resetFilters}
+            onClick={onReset}
             className="self-start md:self-auto text-xs font-bold text-slate-300 hover:text-white transition-all flex items-center gap-2 py-2.5 px-4 rounded-xl border border-slate-700 bg-slate-800/80 hover:bg-slate-700/90 shadow-sm hover:border-slate-500 active:scale-95"
           >
             <span>🔄 ล้างตัวกรองทั้งหมด</span>
           </button>
         </div>
 
-        {/* Main Filter Section */}
+        {/* Filter Controls Grid */}
         <div className="relative z-10 grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 pt-8">
           {/* 1. รูปแบบพอร์ต */}
           <div className="bg-slate-950/50 p-4 rounded-2xl border border-slate-800">
@@ -103,11 +99,11 @@ export default function PropMatcher() {
                 { id: "1-step", label: "1-Step เฟสเดียว" },
                 { id: "instant", label: "Instant ไม่ต้องสอบ" },
               ].map((item) => {
-                const active = modelType === item.id;
+                const active = filters.modelType === item.id;
                 return (
                   <button
                     key={item.id}
-                    onClick={() => setModelType(item.id)}
+                    onClick={() => updateFilter("modelType", item.id)}
                     className={`py-2.5 px-3 rounded-xl text-xs font-bold border transition-all text-center flex items-center justify-center ${
                       active
                         ? "bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 border-cyan-400 font-extrabold shadow-[0_0_20px_rgba(6,182,212,0.35)] scale-[1.02]"
@@ -121,7 +117,7 @@ export default function PropMatcher() {
             </div>
           </div>
 
-          {/* 2. ขนาดพอร์ต Dropdown + Custom */}
+          {/* 2. ขนาดพอร์ต Dropdown */}
           <div className="bg-slate-950/50 p-4 rounded-2xl border border-slate-800 flex flex-col justify-between">
             <div>
               <label className="block text-sm font-bold text-slate-100 mb-3 flex items-center justify-between">
@@ -131,8 +127,8 @@ export default function PropMatcher() {
 
               <div className="relative">
                 <select
-                  value={accountSize}
-                  onChange={(e) => setAccountSize(e.target.value)}
+                  value={filters.accountSize}
+                  onChange={(e) => updateFilter("accountSize", e.target.value)}
                   className="w-full appearance-none bg-slate-800/95 hover:bg-slate-800 border border-slate-700 focus:border-cyan-400 text-slate-100 font-bold text-xs sm:text-sm py-3 px-4 rounded-xl cursor-pointer transition-all outline-none shadow-sm"
                 >
                   {sizeOptions.map((opt) => (
@@ -147,7 +143,7 @@ export default function PropMatcher() {
               </div>
             </div>
 
-            {accountSize === "custom" && (
+            {filters.accountSize === "custom" && (
               <div className="mt-3 animate-fadeIn">
                 <div className="relative">
                   <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-cyan-400 font-bold text-xs">
@@ -156,8 +152,8 @@ export default function PropMatcher() {
                   <input
                     type="number"
                     placeholder="ระบุขนาดพอร์ต เช่น 75000"
-                    value={customSize}
-                    onChange={(e) => setCustomSize(e.target.value)}
+                    value={filters.customSize}
+                    onChange={(e) => updateFilter("customSize", e.target.value)}
                     className="w-full bg-slate-900 border border-cyan-500/50 focus:border-cyan-400 text-white pl-8 pr-4 py-2 rounded-xl text-xs outline-none shadow-inner font-semibold"
                   />
                 </div>
@@ -177,11 +173,11 @@ export default function PropMatcher() {
                 { id: "promptpay", label: "📲 พร้อมเพย์" },
                 { id: "card_crypto", label: "💳 บัตร/Crypto" },
               ].map((pay) => {
-                const active = paymentMethod === pay.id;
+                const active = filters.paymentMethod === pay.id;
                 return (
                   <button
                     key={pay.id}
-                    onClick={() => setPaymentMethod(pay.id)}
+                    onClick={() => updateFilter("paymentMethod", pay.id)}
                     className={`py-2.5 px-2 rounded-xl text-xs font-bold border transition-all text-center flex items-center justify-center ${
                       active
                         ? "bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 border-cyan-400 font-extrabold shadow-[0_0_20px_rgba(6,182,212,0.35)] scale-[1.02]"
@@ -204,18 +200,18 @@ export default function PropMatcher() {
           <div className="flex flex-wrap gap-3">
             {[
               {
-                active: allowNews,
-                toggle: () => setAllowNews(!allowNews),
+                active: filters.allowNews,
+                toggle: () => updateFilter("allowNews", !filters.allowNews),
                 label: "📰 เทรดชนข่าวกล่องแดงได้",
               },
               {
-                active: allowWeekend,
-                toggle: () => setAllowWeekend(!allowWeekend),
+                active: filters.allowWeekend,
+                toggle: () => updateFilter("allowWeekend", !filters.allowWeekend),
                 label: "📅 ถือข้ามสัปดาห์ได้ (Weekend Hold)",
               },
               {
-                active: allowEA,
-                toggle: () => setAllowEA(!allowEA),
+                active: filters.allowEA,
+                toggle: () => updateFilter("allowEA", !filters.allowEA),
                 label: "🤖 รัน EA / บอทเทรดได้",
               },
             ].map((btn, idx) => (
@@ -244,11 +240,11 @@ export default function PropMatcher() {
         {/* Toggle Button for Advanced Filters */}
         <div className="relative z-10 mt-8 pt-5 border-t border-slate-800 flex justify-center">
           <button
-            onClick={() => setShowAdvanced(!showAdvanced)}
+            onClick={() => updateFilter("showAdvanced", !filters.showAdvanced)}
             className="text-xs font-bold text-slate-200 hover:text-cyan-300 flex items-center gap-2 transition-all py-2.5 px-5 rounded-2xl bg-slate-800/90 hover:bg-slate-800 border border-slate-700 hover:border-cyan-500/50 shadow-md"
           >
             <span>
-              {showAdvanced
+              {filters.showAdvanced
                 ? "▲ ซ่อนตัวกรองเงื่อนไขเชิงลึก"
                 : "▼ ตัวกรองเงื่อนไขเชิงลึก (แพลตฟอร์ม, Drawdown, Profit Split, SL, Scaling)"}
             </span>
@@ -256,12 +252,10 @@ export default function PropMatcher() {
         </div>
 
         {/* Advanced Filters Expandable Grid */}
-        {showAdvanced && (
+        {filters.showAdvanced && (
           <div className="relative z-10 mt-6 pt-6 border-t border-slate-800/90 space-y-6">
-            
-            {/* Row 1: Trading Platform & Profit Split */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* 1. Trading Platform (รวม TradingView) */}
+              {/* แพลตฟอร์ม */}
               <div className="bg-slate-950/40 p-4 rounded-2xl border border-slate-800">
                 <span className="block text-xs font-bold text-slate-100 mb-3">
                   💻 แพลตฟอร์มการเทรด (Platform):
@@ -275,11 +269,11 @@ export default function PropMatcher() {
                     { id: "tradelocker", label: "TradeLocker" },
                     { id: "dxtrade", label: "DXtrade" },
                   ].map((p) => {
-                    const active = platform === p.id;
+                    const active = filters.platform === p.id;
                     return (
                       <button
                         key={p.id}
-                        onClick={() => setPlatform(p.id)}
+                        onClick={() => updateFilter("platform", p.id)}
                         className={`py-2 px-3 rounded-xl text-xs font-bold border transition-all ${
                           active
                             ? "bg-cyan-500/25 border-cyan-400 text-cyan-200 shadow-sm"
@@ -293,7 +287,7 @@ export default function PropMatcher() {
                 </div>
               </div>
 
-              {/* 2. Profit Split */}
+              {/* Profit Split */}
               <div className="bg-slate-950/40 p-4 rounded-2xl border border-slate-800">
                 <span className="block text-xs font-bold text-slate-100 mb-3">
                   💰 ส่วนแบ่งกำไร (Profit Split):
@@ -304,11 +298,11 @@ export default function PropMatcher() {
                     { id: "90", label: "สูงสุด 90%+" },
                     { id: "challenge_profit", label: "🎁 มีกำไรช่วงสอบ 15%" },
                   ].map((ps) => {
-                    const active = profitSplit === ps.id;
+                    const active = filters.profitSplit === ps.id;
                     return (
                       <button
                         key={ps.id}
-                        onClick={() => setProfitSplit(ps.id)}
+                        onClick={() => updateFilter("profitSplit", ps.id)}
                         className={`py-2 px-3 rounded-xl text-xs font-bold border transition-all ${
                           active
                             ? "bg-cyan-500/25 border-cyan-400 text-cyan-200 shadow-sm"
@@ -323,9 +317,8 @@ export default function PropMatcher() {
               </div>
             </div>
 
-            {/* Row 2: Drawdown & Payout */}
+            {/* Drawdown & Payout */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Daily Drawdown Type */}
               <div className="bg-slate-950/40 p-4 rounded-2xl border border-slate-800">
                 <span className="block text-xs font-bold text-slate-100 mb-3">
                   🛡️ ประเภท Daily Drawdown:
@@ -335,11 +328,11 @@ export default function PropMatcher() {
                     { id: "all", label: "ไม่ระบุ" },
                     { id: "balance", label: "Balance-based (ปลอดภัย)" },
                   ].map((dd) => {
-                    const active = drawdownType === dd.id;
+                    const active = filters.drawdownType === dd.id;
                     return (
                       <button
                         key={dd.id}
-                        onClick={() => setDrawdownType(dd.id)}
+                        onClick={() => updateFilter("drawdownType", dd.id)}
                         className={`py-2 px-3 rounded-xl text-xs font-bold border transition-all text-center ${
                           active
                             ? "bg-cyan-500/25 border-cyan-400 text-cyan-200"
@@ -353,7 +346,6 @@ export default function PropMatcher() {
                 </div>
               </div>
 
-              {/* Payout Speed */}
               <div className="bg-slate-950/40 p-4 rounded-2xl border border-slate-800">
                 <span className="block text-xs font-bold text-slate-100 mb-3">
                   ⏱️ รอบการถอนกำไร (Payout):
@@ -363,11 +355,11 @@ export default function PropMatcher() {
                     { id: "all", label: "รอบปกติ (14 วัน)" },
                     { id: "fast", label: "⚡ ถอนไวพิเศษ (5–8 วัน)" },
                   ].map((po) => {
-                    const active = payoutSpeed === po.id;
+                    const active = filters.payoutSpeed === po.id;
                     return (
                       <button
                         key={po.id}
-                        onClick={() => setPayoutSpeed(po.id)}
+                        onClick={() => updateFilter("payoutSpeed", po.id)}
                         className={`py-2 px-3 rounded-xl text-xs font-bold border transition-all text-center ${
                           active
                             ? "bg-cyan-500/25 border-cyan-400 text-cyan-200"
@@ -382,66 +374,61 @@ export default function PropMatcher() {
               </div>
             </div>
 
-            {/* Row 3: Strict Rules & Scaling Toggles */}
+            {/* Special Rules */}
             <div className="bg-slate-950/40 p-4 rounded-2xl border border-slate-800">
               <span className="block text-xs font-bold text-slate-100 mb-3">
                 ⚖️ กฎเกณฑ์พิเศษและโอกาสเติบโต:
               </span>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                {/* 3. Minimum Trading Days */}
                 <button
-                  onClick={() => setNoMinDays(!noMinDays)}
+                  onClick={() => updateFilter("noMinDays", !filters.noMinDays)}
                   className={`py-2.5 px-3 rounded-xl text-xs font-bold border text-left flex items-center justify-between transition-all ${
-                    noMinDays
+                    filters.noMinDays
                       ? "bg-cyan-500/25 border-cyan-400 text-cyan-200"
                       : "bg-slate-800/70 border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white"
                   }`}
                 >
                   <span>⚡ ไม่มีวันเทรดขั้นต่ำ (0 วัน)</span>
-                  <span className="font-black text-sm">{noMinDays ? "✓" : "+"}</span>
+                  <span className="font-black text-sm">{filters.noMinDays ? "✓" : "+"}</span>
                 </button>
 
-                {/* 4. Stop Loss Requirement */}
                 <button
-                  onClick={() => setNoSlRequired(!noSlRequired)}
+                  onClick={() => updateFilter("noSlRequired", !filters.noSlRequired)}
                   className={`py-2.5 px-3 rounded-xl text-xs font-bold border text-left flex items-center justify-between transition-all ${
-                    noSlRequired
+                    filters.noSlRequired
                       ? "bg-cyan-500/25 border-cyan-400 text-cyan-200"
                       : "bg-slate-800/70 border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white"
                   }`}
                 >
                   <span>🔓 ไม่บังคับตั้ง Stop Loss</span>
-                  <span className="font-black text-sm">{noSlRequired ? "✓" : "+"}</span>
+                  <span className="font-black text-sm">{filters.noSlRequired ? "✓" : "+"}</span>
                 </button>
 
-                {/* Consistency Rule */}
                 <button
-                  onClick={() => setNoConsistencyRule(!noConsistencyRule)}
+                  onClick={() => updateFilter("noConsistencyRule", !filters.noConsistencyRule)}
                   className={`py-2.5 px-3 rounded-xl text-xs font-bold border text-left flex items-center justify-between transition-all ${
-                    noConsistencyRule
+                    filters.noConsistencyRule
                       ? "bg-cyan-500/25 border-cyan-400 text-cyan-200"
                       : "bg-slate-800/70 border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white"
                   }`}
                 >
                   <span>🚫 ไม่มี Consistency Rule</span>
-                  <span className="font-black text-sm">{noConsistencyRule ? "✓" : "+"}</span>
+                  <span className="font-black text-sm">{filters.noConsistencyRule ? "✓" : "+"}</span>
                 </button>
 
-                {/* 5. Scaling Plan */}
                 <button
-                  onClick={() => setScalingPlan(!scalingPlan)}
+                  onClick={() => updateFilter("scalingPlan", !filters.scalingPlan)}
                   className={`py-2.5 px-3 rounded-xl text-xs font-bold border text-left flex items-center justify-between transition-all ${
-                    scalingPlan
+                    filters.scalingPlan
                       ? "bg-cyan-500/25 border-cyan-400 text-cyan-200"
                       : "bg-slate-800/70 border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white"
                   }`}
                 >
-                  <span>🚀 สเกลพอร์ตโตได้ ($1M - $4M)</span>
-                  <span className="font-black text-sm">{scalingPlan ? "✓" : "+"}</span>
+                  <span>🚀 สเกลพอร์ตโตได้ ($1M+)</span>
+                  <span className="font-black text-sm">{filters.scalingPlan ? "✓" : "+"}</span>
                 </button>
               </div>
             </div>
-
           </div>
         )}
       </div>
