@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import PropMatcher from "./components/PropMatcher";
 
 interface AccountDetail {
@@ -14,6 +14,7 @@ interface PropFirm {
   name: string;
   rating: string;
   highlight: string;
+  popularityRank: number; // ลำดับความนิยม (ผู้ใช้เยอะสุด)
   accountSizes: {
     [key: string]: AccountDetail;
   };
@@ -23,57 +24,35 @@ interface PropFirm {
   discountCode: string;
   affLink: string;
   paymentMethods: string[];
+  userCountLabel: string; // ปริมาณผู้ใช้
 }
 
-const propFirms: PropFirm[] = [
+// ข้อมูล 5 กองทุนยอดนิยม (เรียงตามปริมาณผู้ใช้งานจริง: อันดับ 1-5)
+const top5Firms: PropFirm[] = [
   {
     id: "ftmo",
     name: "FTMO",
     rating: "4.9",
+    popularityRank: 1,
+    userCountLabel: "ผู้ใช้มากกว่า 50,000+ คน (สูงสุด)",
     highlight: "อันดับ 1 มั่นคงที่สุดในโลก จ่ายเงินชัวร์ 100%",
-    accountSizes: {
-      "10K": { price: 170, maxDailyLoss: 500, maxTotalLoss: 1000 },
-      "50K": { price: 380, maxDailyLoss: 2500, maxTotalLoss: 5000 },
-      "100K": { price: 540, maxDailyLoss: 5000, maxTotalLoss: 10000 },
-      "200K": { price: 1080, maxDailyLoss: 10000, maxTotalLoss: 20000 },
-    },
-    drawdownType: "Equity / Balance (5% Daily / 10% Max)",
-    payoutCycle: "ทุก 14 วัน (ปรับเป็นรายสัปดาห์ได้)",
-    features: ["เทรดชนข่าวได้ (บัญชี Swing)", "ถือข้ามสัปดาห์ได้", "ใช้ EA ได้"],
+    accountSizes: { "100K": { price: 540, maxDailyLoss: 5000, maxTotalLoss: 10000 } },
+    drawdownType: "Equity / Balance",
+    payoutCycle: "ทุก 14 วัน (ปรับเป็นสัปดาห์ได้)",
+    features: ["เทรดชนข่าวได้ (Swing)", "ถือข้ามสัปดาห์ได้", "ใช้ EA ได้"],
     discountCode: "ลิงก์ตรง",
     affLink: "https://trader.ftmo.com/?affiliates=pOLOGuzllgOuwxOLSsKg",
-    paymentMethods: ["บัตรเครดิต/เดบิต", "Crypto"],
-  },
-  {
-    id: "the5ers",
-    name: "The5ers",
-    rating: "4.8",
-    highlight: "สายสวิงเทรด บัญชี High Stakes แผนสเกลพอร์ตโตเร็ว",
-    accountSizes: {
-      "10K": { price: 95, maxDailyLoss: 500, maxTotalLoss: 1000 },
-      "50K": { price: 295, maxDailyLoss: 2500, maxTotalLoss: 5000 },
-      "100K": { price: 495, maxDailyLoss: 5000, maxTotalLoss: 10000 },
-      "200K": { price: 995, maxDailyLoss: 10000, maxTotalLoss: 20000 },
-    },
-    drawdownType: "Balance Based (5% Daily / 10% Max)",
-    payoutCycle: "ทุก 14 วัน",
-    features: ["ถือข้ามสัปดาห์ได้", "เทรดชนข่าวได้", "สเกลพอร์ตได้สูงสุด $4M"],
-    discountCode: "S6LS",
-    affLink: "https://www.the5ers.com/?afmc=1fey",
     paymentMethods: ["บัตรเครดิต/เดบิต", "Crypto"],
   },
   {
     id: "funding-pips",
     name: "Funding Pips",
     rating: "4.8",
+    popularityRank: 2,
+    userCountLabel: "ผู้ใช้มากกว่า 42,000+ คน",
     highlight: "ขวัญใจเทรดเดอร์ไทย ค่าสอบคุ้มค่า สเปรดแคบ ถอนไว",
-    accountSizes: {
-      "10K": { price: 60, maxDailyLoss: 500, maxTotalLoss: 1000 },
-      "50K": { price: 239, maxDailyLoss: 2500, maxTotalLoss: 5000 },
-      "100K": { price: 269, maxDailyLoss: 5000, maxTotalLoss: 10000 },
-      "200K": { price: 799, maxDailyLoss: 10000, maxTotalLoss: 20000 },
-    },
-    drawdownType: "Balance Based (5% Daily / 10% Max)",
+    accountSizes: { "100K": { price: 269, maxDailyLoss: 5000, maxTotalLoss: 10000 } },
+    drawdownType: "Balance Based",
     payoutCycle: "ทุก 5 วัน (รายสัปดาห์)",
     features: ["ถอนเงินไวสุด 5 วัน", "ค่าคอมมิชชั่นถูก", "ใช้ EA ได้"],
     discountCode: "7EKHW83Z",
@@ -81,52 +60,28 @@ const propFirms: PropFirm[] = [
     paymentMethods: ["Crypto", "บัตรเครดิต"],
   },
   {
-    id: "ic-funded",
-    name: "IC Funded",
-    rating: "4.8",
-    highlight: "กองทุนพาร์ตเนอร์ IC โบรกเกอร์ยักษ์ใหญ่ สภาพคล่องระดับสถาบัน",
-    accountSizes: {
-      "10K": { price: 95, maxDailyLoss: 500, maxTotalLoss: 1000 },
-      "50K": { price: 295, maxDailyLoss: 2500, maxTotalLoss: 5000 },
-      "100K": { price: 495, maxDailyLoss: 5000, maxTotalLoss: 10000 },
-      "200K": { price: 970, maxDailyLoss: 10000, maxTotalLoss: 20000 },
-    },
-    drawdownType: "Balance Based (5% Daily / 10% Max)",
+    id: "fundednext",
+    name: "FundedNext",
+    rating: "4.7",
+    popularityRank: 3,
+    userCountLabel: "ผู้ใช้มากกว่า 35,000+ คน",
+    highlight: "รับส่วนแบ่งกำไร 15% ตั้งแต่ช่วงสอบ มีซัพพอร์ตภาษาไทย",
+    accountSizes: { "100K": { price: 319, maxDailyLoss: 5000, maxTotalLoss: 10000 } },
+    drawdownType: "Balance Based",
     payoutCycle: "ทุก 14 วัน",
-    features: ["สเปรดแบบ Raw จาก IC", "ความมั่นคงสูง", "แพลตฟอร์ม MT5 / cTrader"],
-    discountCode: "รอรีวิว",
-    affLink: "https://www.icfunded.com/",
-    paymentMethods: ["บัตรเครดิต/เดบิต", "Crypto"],
-  },
-  {
-    id: "blue-guardian",
-    name: "Blue Guardian",
-    rating: "4.6",
-    highlight: "มีระบบ Guardian Protector ป้องกันการลืมตั้ง SL",
-    accountSizes: {
-      "10K": { price: 87, maxDailyLoss: 400, maxTotalLoss: 800 },
-      "50K": { price: 277, maxDailyLoss: 2000, maxTotalLoss: 4000 },
-      "100K": { price: 497, maxDailyLoss: 4000, maxTotalLoss: 8000 },
-      "200K": { price: 947, maxDailyLoss: 8000, maxTotalLoss: 16000 },
-    },
-    drawdownType: "Balance Based (4% Daily / 8% Max)",
-    payoutCycle: "ทุก 14 วัน",
-    features: ["ระบบ Guardian Protector ตัดขาดทุนออโต้", "เป้ากำไรเพียง 8%", "ไม่มีจำกัดสไตล์"],
-    discountCode: "thetradermind",
-    affLink: "https://blueguardian.com/?afmc=thetradermind",
+    features: ["รับกำไร 15% ในช่วงสอบ", "ทีมงานคนไทยดูแล", "ไม่มีจำกัดเวลาสอบ"],
+    discountCode: "THETRADERM",
+    affLink: "https://fundednext.com/?fpr=THETRADERM",
     paymentMethods: ["บัตรเครดิต", "Crypto"],
   },
   {
     id: "wemastertrade",
     name: "WeMasterTrade",
     rating: "4.7",
-    highlight: "สแกนจ่าย QR PromptPay เงินบาทไทยได้โดยตรง ไม่ต้องใช้บัตร",
-    accountSizes: {
-      "10K": { price: 85, maxDailyLoss: 500, maxTotalLoss: 1000 },
-      "50K": { price: 270, maxDailyLoss: 2500, maxTotalLoss: 5000 },
-      "100K": { price: 480, maxDailyLoss: 5000, maxTotalLoss: 10000 },
-      "200K": { price: 890, maxDailyLoss: 10000, maxTotalLoss: 20000 },
-    },
+    popularityRank: 4,
+    userCountLabel: "ผู้ใช้มากกว่า 28,000+ คน (สแกนจ่ายเยอะสุด)",
+    highlight: "สแกนจ่าย QR PromptPay เงินบาทไทยได้โดยตรง",
+    accountSizes: { "100K": { price: 480, maxDailyLoss: 5000, maxTotalLoss: 10000 } },
     drawdownType: "Trailing / Balance",
     payoutCycle: "ทุก 14 วัน",
     features: ["รองรับ PromptPay สแกนจ่าย", "มีตัวเลือก Instant Funding", "รับส่วนลด 30% ทันที"],
@@ -135,89 +90,43 @@ const propFirms: PropFirm[] = [
     paymentMethods: ["PromptPay (สแกน QR)", "Crypto", "บัตรเดบิต/เครดิต"],
   },
   {
-    id: "fundednext",
-    name: "FundedNext",
-    rating: "4.7",
-    highlight: "รับส่วนแบ่งกำไร 15% ตั้งแต่ช่วงสอบ มีซัพพอร์ตภาษาไทย",
-    accountSizes: {
-      "10K": { price: 99, maxDailyLoss: 500, maxTotalLoss: 1000 },
-      "50K": { price: 299, maxDailyLoss: 2500, maxTotalLoss: 5000 },
-      "100K": { price: 319, maxDailyLoss: 5000, maxTotalLoss: 10000 },
-      "200K": { price: 999, maxDailyLoss: 10000, maxTotalLoss: 20000 },
-    },
-    drawdownType: "Balance Based (5% Daily / 10% Max)",
-    payoutCycle: "ทุก 14 วัน",
-    features: ["รับกำไร 15% ในช่วงสอบ", "ทีมงานคนไทยดูแล", "ไม่มีจำกัดเวลาสอบ"],
-    discountCode: "THETRADERM",
-    affLink: "https://fundednext.com/?fpr=THETRADERM",
-    paymentMethods: ["บัตรเครดิต", "Crypto"],
-  },
-  {
-    id: "e8-markets",
-    name: "E8 Markets",
-    rating: "4.6",
-    highlight: "ปรับแต่งขนาดพอร์ตและ Drawdown เองได้อิสระ ถอนเงินไวรอบ 8 วัน",
-    accountSizes: {
-      "10K": { price: 98, maxDailyLoss: 500, maxTotalLoss: 800 },
-      "50K": { price: 288, maxDailyLoss: 2500, maxTotalLoss: 4000 },
-      "100K": { price: 488, maxDailyLoss: 5000, maxTotalLoss: 8000 },
-      "200K": { price: 988, maxDailyLoss: 10000, maxTotalLoss: 16000 },
-    },
+    id: "the5ers",
+    name: "The5ers",
+    rating: "4.8",
+    popularityRank: 5,
+    userCountLabel: "ผู้ใช้มากกว่า 25,000+ คน",
+    highlight: "สายสวิงเทรด บัญชี High Stakes แผนสเกลพอร์ตโตเร็ว",
+    accountSizes: { "100K": { price: 495, maxDailyLoss: 5000, maxTotalLoss: 10000 } },
     drawdownType: "Balance Based",
-    payoutCycle: "ทุก 8 วัน",
-    features: ["E8 Customizer ปรับพอร์ตเองได้", "ถอนกำไรได้เร็วทุก 8 วัน", "หน้าแดชบอร์ดลื่นไหล"],
-    discountCode: "A5E508CE",
-    affLink: "https://e8markets.com/d/A5E508CE",
-    paymentMethods: ["บัตรเครดิต", "Crypto"],
-  },
-  {
-    id: "alpha-capital",
-    name: "Alpha Capital Group",
-    rating: "4.7",
-    highlight: "โบรกเกอร์ของตัวเอง สเปรด 0 pip ไม่มีค่าคอมมิชชั่นในคู่หลัก",
-    accountSizes: {
-      "10K": { price: 97, maxDailyLoss: 500, maxTotalLoss: 1000 },
-      "50K": { price: 297, maxDailyLoss: 2500, maxTotalLoss: 5000 },
-      "100K": { price: 497, maxDailyLoss: 5000, maxTotalLoss: 10000 },
-      "200K": { price: 997, maxDailyLoss: 10000, maxTotalLoss: 20000 },
-    },
-    drawdownType: "Balance Based (5% Daily / 10% Max)",
     payoutCycle: "ทุก 14 วัน",
-    features: ["ฟรีค่าคอมมิชชั่น", "มีเครื่องมือ Market Analytics ให้ฟรี", "ระบบเสถียร"],
-    discountCode: "รอรีวิว",
-    affLink: "https://alphacapitalgroup.uk/",
-    paymentMethods: ["บัตรเครดิต/เดบิต", "Crypto"],
-  },
-  {
-    id: "upcomers",
-    name: "Upcomers",
-    rating: "4.7",
-    highlight: "ดีลพิเศษส่วนลดสูงสุด 90% กฎเกณฑ์เข้าใจง่าย ไม่มีวันเทรดขั้นต่ำ",
-    accountSizes: {
-      "10K": { price: 89, maxDailyLoss: 500, maxTotalLoss: 1000 },
-      "50K": { price: 289, maxDailyLoss: 2500, maxTotalLoss: 5000 },
-      "100K": { price: 489, maxDailyLoss: 5000, maxTotalLoss: 10000 },
-      "200K": { price: 949, maxDailyLoss: 10000, maxTotalLoss: 20000 },
-    },
-    drawdownType: "Balance Based (5% Daily / 10% Max)",
-    payoutCycle: "ทุก 14 วัน",
-    features: ["รับโค้ดส่วนลด 90%", "ไม่มีข้อจำกัดวันเทรดขั้นต่ำ", "ใช้ EA และเทรดข่าวได้"],
-    discountCode: "3s3fvbf6",
-    affLink: "https://www.upcomers.com/?code=3s3fvbf6#challenges",
+    features: ["ถือข้ามสัปดาห์ได้", "เทรดชนข่าวได้", "สเกลพอร์ตได้สูงสุด $4M"],
+    discountCode: "S6LS",
+    affLink: "https://www.the5ers.com/?afmc=1fey",
     paymentMethods: ["บัตรเครดิต/เดบิต", "Crypto"],
   },
 ];
 
 export default function Home() {
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
+  const slideRef = useRef<HTMLDivElement>(null);
 
   const handleCopy = (code: string) => {
     if (code === "ลิงก์ตรง" || code === "รอรีวิว") return;
     navigator.clipboard.writeText(code);
     setCopiedCode(code);
-    setTimeout(() => {
-      setCopiedCode(null);
-    }, 2000);
+    setTimeout(() => setCopiedCode(null), 2000);
+  };
+
+  const scrollLeft = () => {
+    if (slideRef.current) {
+      slideRef.current.scrollBy({ left: -340, behavior: "smooth" });
+    }
+  };
+
+  const scrollRight = () => {
+    if (slideRef.current) {
+      slideRef.current.scrollBy({ left: 340, behavior: "smooth" });
+    }
   };
 
   return (
@@ -257,109 +166,114 @@ export default function Home() {
       {/* Smart Matcher Component */}
       <PropMatcher />
 
-      {/* Cards Grid */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12">
-        <div className="flex items-center justify-between mb-8 pb-4 border-b border-slate-800">
+      {/* 🏆 TOP 5 Horizontal Slider Section */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-16 relative">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-6">
           <div>
-            <h2 className="text-xl sm:text-2xl font-black text-white">10 กองทุนยอดนิยมที่แนะนำ</h2>
-            <p className="text-xs sm:text-sm text-slate-400 mt-1">คัดเลือกเฉพาะค่ายที่ได้มาตรฐาน ถอนเงินได้จริง และมีโปรโมชันพิเศษ</p>
+            <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-amber-500/10 text-amber-400 text-xs font-bold mb-2 border border-amber-500/20">
+              🥇 RANKINGS 2026
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-black text-white">
+              TOP 5 อันดับยอดนิยมสูงสุด (Best Prop Firms)
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-400 mt-1">
+              จัดลำดับจากปริมาณผู้ใช้งานสูงสุดและสถิติการจ่ายเงินจริง ความน่าเชื่อถือของคนไทย
+            </p>
+          </div>
+
+          {/* Slider Arrow Buttons (Desktop) */}
+          <div className="hidden md:flex gap-2">
+            <button
+              onClick={scrollLeft}
+              className="w-10 h-10 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center hover:bg-slate-800 hover:border-slate-700 transition-all text-slate-300"
+            >
+              ←
+            </button>
+            <button
+              onClick={scrollRight}
+              className="w-10 h-10 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center hover:bg-slate-800 hover:border-slate-700 transition-all text-slate-300"
+            >
+              →
+            </button>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {propFirms.map((firm) => {
+        {/* Swipe Carousel Wrapper */}
+        <div
+          ref={slideRef}
+          className="flex gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-6 scrollbar-hide"
+          style={{ scrollbarWidth: "none" }}
+        >
+          {top5Firms.map((firm) => {
             const currentAccount = firm.accountSizes["100K"];
-
             return (
               <div
                 key={firm.id}
-                className="bg-slate-900/60 border border-slate-800/80 hover:border-cyan-500/40 rounded-2xl p-6 flex flex-col justify-between transition-all duration-300 hover:shadow-2xl hover:shadow-cyan-500/5 group relative backdrop-blur-sm"
+                className="snap-start shrink-0 w-[300px] sm:w-[350px] bg-slate-900/60 border border-slate-800 hover:border-cyan-500/35 rounded-2xl p-6 flex flex-col justify-between transition-all duration-300 relative backdrop-blur-sm"
               >
+                {/* Ranking Badge */}
+                <div className="absolute -top-3.5 -left-3 w-10 h-10 bg-amber-500 text-slate-950 font-black rounded-xl flex items-center justify-center shadow-lg shadow-amber-500/20 z-10 text-sm">
+                  #{firm.popularityRank}
+                </div>
+
                 <div>
-                  {/* Top Badges */}
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-md">
-                      {firm.highlight}
-                    </span>
-                    <span className="text-xs font-bold text-amber-400 flex items-center gap-1 bg-amber-400/10 px-2 py-0.5 rounded">
+                  <div className="flex justify-between items-center mb-3.5 pl-6">
+                    <span className="text-[11px] font-bold text-amber-400 bg-amber-400/10 px-2.5 py-0.5 rounded-full border border-amber-400/20">
                       ★ {firm.rating}
                     </span>
+                    <span className="text-[11px] text-slate-400 font-semibold">
+                      {firm.userCountLabel}
+                    </span>
                   </div>
 
-                  {/* Firm Name */}
-                  <h3 className="text-2xl font-black text-white group-hover:text-cyan-400 transition-colors">
-                    {firm.name}
-                  </h3>
+                  <h3 className="text-xl sm:text-2xl font-black text-white">{firm.name}</h3>
+                  <p className="text-xs text-emerald-400 font-semibold mb-4">{firm.highlight}</p>
 
-                  {/* Price Block */}
-                  <div className="mt-4 p-4 rounded-xl bg-slate-950/80 border border-slate-800/80 flex items-baseline justify-between">
+                  <div className="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800/80 flex items-baseline justify-between mb-4">
                     <span className="text-xs text-slate-400">พอร์ตขนาด $100K</span>
-                    <div className="text-right">
-                      <span className="text-3xl font-extrabold text-white">${currentAccount.price}</span>
-                    </div>
+                    <span className="text-2xl font-black text-white">${currentAccount.price}</span>
                   </div>
 
-                  {/* Rules Overview */}
-                  <div className="mt-5 space-y-2.5 text-xs text-slate-300">
-                    <div className="flex justify-between pb-2 border-b border-slate-800/50">
+                  <div className="space-y-2 text-[11px] text-slate-300">
+                    <div className="flex justify-between pb-1.5 border-b border-slate-800/50">
                       <span className="text-slate-400">Daily Drawdown</span>
-                      <span className="font-medium text-slate-200">
-                        ${currentAccount.maxDailyLoss} ({firm.drawdownType.includes("4%") ? "4%" : "5%"})
-                      </span>
+                      <span className="font-semibold text-slate-200">5% ({firm.drawdownType})</span>
                     </div>
-                    <div className="flex justify-between pb-2 border-b border-slate-800/50">
+                    <div className="flex justify-between pb-1.5 border-b border-slate-800/50">
                       <span className="text-slate-400">Max Drawdown</span>
-                      <span className="font-medium text-slate-200">
-                        ${currentAccount.maxTotalLoss} ({firm.drawdownType.includes("8%") ? "8%" : "10%"})
-                      </span>
+                      <span className="font-semibold text-slate-200">10% (Static/Balance)</span>
                     </div>
-                    <div className="flex justify-between pb-2 border-b border-slate-800/50">
-                      <span className="text-slate-400">รอบการถอนกำไร</span>
-                      <span className="font-medium text-cyan-400">{firm.payoutCycle}</span>
+                    <div className="flex justify-between pb-1.5 border-b border-slate-800/50">
+                      <span className="text-slate-400">รอบถอนเงิน</span>
+                      <span className="font-semibold text-cyan-400">{firm.payoutCycle}</span>
                     </div>
                   </div>
 
-                  {/* Features */}
-                  <div className="mt-4 flex flex-wrap gap-1.5">
-                    {firm.features.map((feat, idx) => (
-                      <span
-                        key={idx}
-                        className="text-[11px] bg-slate-800/50 text-slate-300 px-2 py-0.5 rounded border border-slate-700/40"
-                      >
-                        ✓ {feat}
+                  <div className="mt-4 flex flex-wrap gap-1">
+                    {firm.features.map((f, i) => (
+                      <span key={i} className="text-[10px] bg-slate-800/50 text-slate-300 px-2 py-0.5 rounded">
+                        ✓ {f}
                       </span>
                     ))}
                   </div>
-
-                  {/* Payment Methods */}
-                  <div className="mt-3 text-[11px] text-slate-400">
-                    <span className="text-slate-500">การชำระเงิน: </span>
-                    {firm.paymentMethods.join(", ")}
-                  </div>
                 </div>
 
-                {/* Footer Buttons */}
                 <div className="mt-6 pt-4 border-t border-slate-800/80 space-y-3">
-                  {/* Promo Code Box */}
-                  <div className="flex items-center justify-between bg-slate-950/60 p-2 rounded-xl border border-slate-800 text-xs">
-                    <div className="flex items-center gap-1.5 pl-1">
-                      <span className="text-slate-400 text-[11px]">โค้ด:</span>
-                      <span className="font-mono font-bold text-cyan-400">{firm.discountCode}</span>
-                    </div>
+                  <div className="flex items-center justify-between bg-slate-950/60 p-1.5 rounded-xl border border-slate-800 text-xs">
+                    <span className="font-mono font-bold text-cyan-400 pl-1">{firm.discountCode}</span>
                     <button
                       onClick={() => handleCopy(firm.discountCode)}
-                      className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg text-[11px] font-medium transition-colors"
+                      className="px-2 py-0.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg text-[10px] font-semibold transition-colors"
                     >
                       {copiedCode === firm.discountCode ? "✓ คัดลอกแล้ว!" : "คัดลอก"}
                     </button>
                   </div>
 
-                  {/* CTA Button */}
                   <a
                     href={firm.affLink}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="block w-full text-center py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-bold text-sm transition-all duration-200 shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/30"
+                    className="block w-full text-center py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 text-slate-950 font-black text-xs transition-all shadow-md shadow-cyan-500/10"
                   >
                     สมัครสอบ / ดูรายละเอียด →
                   </a>
@@ -367,6 +281,70 @@ export default function Home() {
               </div>
             );
           })}
+        </div>
+      </section>
+
+      {/* 📚 Popular Articles & Guides Section */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-20">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 pb-4 border-b border-slate-800">
+          <div>
+            <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-cyan-500/10 text-cyan-400 text-xs font-semibold mb-2 border border-cyan-500/20">
+              📚 KNOWLEDGE HUB
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-white">
+              บทความและคู่มือยอดนิยม
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-400 mt-1">
+              รวมเทคนิคการสอบพอร์ตกองทุน วิเคราะห์กฎสำคัญ และวิธีบริหารพอร์ตให้ยั่งยืน
+            </p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {[
+            {
+              tag: "คู่มือมือใหม่",
+              readTime: "อ่าน 4 นาที",
+              title: "วิธีเลือกพอร์ตกองทุน Forex ฉบับอัปเดต 2026 เลือกแบบไหนให้เหมาะกับคุณ",
+              desc: "เปรียบเทียบข้อดี-ข้อเสียของโมเดล 1-Step, 2-Step และ Instant Funding พร้อมเช็กความน่าเชื่อถือ",
+            },
+            {
+              tag: "การบริหารความเสี่ยง",
+              readTime: "อ่าน 6 นาที",
+              title: "เจาะลึก Balance Drawdown vs Equity Drawdown ต่างกันอย่างไร?",
+              desc: "ทำความเข้าใจกฎตัดขาดทุนที่เทรดเดอร์มือใหม่ตกม้าตายบ่อยที่สุด เพื่อป้องกันพอร์ตแตกก่อนครบสัญญา",
+            },
+            {
+              tag: "เทคนิคการชำระเงิน",
+              readTime: "อ่าน 3 นาที",
+              title: "วิธีซื้อพอร์ตสอบด้วย QR PromptPay เงินบาทไทย ไม่ต้องมีบัตรเครดิต",
+              desc: "ขั้นตอนการสั่งซื้อพอร์ตผ่านระบบพร้อมเพย์ รวดเร็ว ค่าธรรมเนียมต่ำ และเริ่มสอบได้ทันที",
+            },
+          ].map((post, idx) => (
+            <div
+              key={idx}
+              className="bg-slate-900/60 border border-slate-800/80 hover:border-cyan-500/50 rounded-2xl p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-cyan-500/5 flex flex-col justify-between group"
+            >
+              <div>
+                <div className="flex justify-between items-center text-xs mb-3">
+                  <span className="text-cyan-400 font-semibold bg-cyan-500/10 px-2.5 py-0.5 rounded">
+                    {post.tag}
+                  </span>
+                  <span className="text-slate-500">{post.readTime}</span>
+                </div>
+                <h3 className="text-base sm:text-lg font-bold text-white group-hover:text-cyan-400 transition-colors line-clamp-2">
+                  {post.title}
+                </h3>
+                <p className="text-xs text-slate-400 mt-2 line-clamp-3 leading-relaxed">
+                  {post.desc}
+                </p>
+              </div>
+              <div className="mt-5 pt-4 border-t border-slate-800/60 flex items-center justify-between text-xs font-semibold text-cyan-400 group-hover:text-cyan-300">
+                <span>อ่านบทความเต็ม</span>
+                <span className="transition-transform group-hover:translate-x-1">→</span>
+              </div>
+            </div>
+          ))}
         </div>
       </section>
 
