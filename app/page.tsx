@@ -525,7 +525,7 @@ export default function Home() {
               <span className="font-extrabold text-xl tracking-tight text-white">PropHub</span>
               <span className="text-[10px] bg-cyan-500/20 text-cyan-300 font-bold px-1.5 py-0.5 rounded border border-cyan-500/30">TH</span>
             </div>
-            <p className="text-xs text-slate-400">ศูนย์รวมเปรียบเทียบพอร์ตกองทุนเพื่อคนไทย</p>
+            <p className="text-xs text-slate-400">เลือกกองทุนที่ใช่สำหรับคุณ</p>
           </div>
         </div>
       </header>
@@ -536,7 +536,7 @@ export default function Home() {
           เปรียบเทียบ <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">พอร์ตกองทุนที่ดีที่สุด</span>
         </h1>
         <p className="mt-4 text-sm sm:text-base text-slate-400 max-w-2xl mx-auto font-light">
-          เทียบกฎ Drawdown, ราคาค่าสอบ, กฎเทรดข่าว พร้อมรับส่วนลดค่าสอบทันที อัปเดตข้อมูลตรงสำหรับเทรดเดอร์ไทย
+          คลังความรู้การสอบกองทุน กฏและเงื่อนไขการเทรด โค้ดส่วนลด ระบบคัดกรองกองทุน อับเดตข้อมูลตรงสำหรับเทรดเดอร์ไทย
         </p>
       </section>
 
