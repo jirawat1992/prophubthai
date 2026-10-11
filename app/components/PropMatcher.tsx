@@ -57,7 +57,7 @@ export default function PropMatcher({
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-10">
       <div className="relative rounded-3xl bg-slate-900/95 border border-slate-700/80 p-6 sm:p-10 shadow-[0_0_50px_-12px_rgba(6,182,212,0.15)] backdrop-blur-2xl overflow-hidden">
-        {/* Glow Ambient */}
+        {/* Glow Background */}
         <div className="absolute -top-24 -left-20 w-80 h-80 bg-blue-600/20 rounded-full blur-[100px] pointer-events-none" />
         <div className="absolute top-1/2 -right-20 w-80 h-80 bg-cyan-500/15 rounded-full blur-[100px] pointer-events-none" />
 
@@ -78,6 +78,7 @@ export default function PropMatcher({
 
           <button
             onClick={onReset}
+            type="button"
             className="self-start md:self-auto text-xs font-bold text-slate-300 hover:text-white transition-all flex items-center gap-2 py-2.5 px-4 rounded-xl border border-slate-700 bg-slate-800/80 hover:bg-slate-700/90 shadow-sm hover:border-slate-500 active:scale-95"
           >
             <span>🔄 ล้างตัวกรองทั้งหมด</span>
@@ -88,7 +89,7 @@ export default function PropMatcher({
         <div className="relative z-10 grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 pt-8">
           {/* 1. รูปแบบพอร์ต */}
           <div className="bg-slate-950/50 p-4 rounded-2xl border border-slate-800">
-            <label className="block text-sm font-bold text-slate-100 mb-3 flex items-center justify-between">
+            <label className="text-sm font-bold text-slate-100 mb-3 flex items-center justify-between">
               <span>1. รูปแบบพอร์ต</span>
               <span className="text-[11px] text-cyan-400 font-semibold">Model</span>
             </label>
@@ -103,6 +104,7 @@ export default function PropMatcher({
                 return (
                   <button
                     key={item.id}
+                    type="button"
                     onClick={() => updateFilter("modelType", item.id)}
                     className={`py-2.5 px-3 rounded-xl text-xs font-bold border transition-all text-center flex items-center justify-center ${
                       active
@@ -117,10 +119,10 @@ export default function PropMatcher({
             </div>
           </div>
 
-          {/* 2. ขนาดพอร์ต Dropdown */}
+          {/* 2. ขนาดพอร์ต */}
           <div className="bg-slate-950/50 p-4 rounded-2xl border border-slate-800 flex flex-col justify-between">
             <div>
-              <label className="block text-sm font-bold text-slate-100 mb-3 flex items-center justify-between">
+              <label className="text-sm font-bold text-slate-100 mb-3 flex items-center justify-between">
                 <span>2. ขนาดพอร์ต ($5K - $1M)</span>
                 <span className="text-[11px] text-cyan-400 font-semibold">Balance</span>
               </label>
@@ -144,7 +146,7 @@ export default function PropMatcher({
             </div>
 
             {filters.accountSize === "custom" && (
-              <div className="mt-3 animate-fadeIn">
+              <div className="mt-3">
                 <div className="relative">
                   <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-cyan-400 font-bold text-xs">
                     $
@@ -163,7 +165,7 @@ export default function PropMatcher({
 
           {/* 3. ช่องทางการชำระเงิน */}
           <div className="bg-slate-950/50 p-4 rounded-2xl border border-slate-800">
-            <label className="block text-sm font-bold text-slate-100 mb-3 flex items-center justify-between">
+            <label className="text-sm font-bold text-slate-100 mb-3 flex items-center justify-between">
               <span>3. ช่องทางชำระเงิน</span>
               <span className="text-[11px] text-cyan-400 font-semibold">Payment</span>
             </label>
@@ -177,6 +179,7 @@ export default function PropMatcher({
                 return (
                   <button
                     key={pay.id}
+                    type="button"
                     onClick={() => updateFilter("paymentMethod", pay.id)}
                     className={`py-2.5 px-2 rounded-xl text-xs font-bold border transition-all text-center flex items-center justify-center ${
                       active
@@ -192,11 +195,11 @@ export default function PropMatcher({
           </div>
         </div>
 
-        {/* Main Trading Rules */}
+        {/* Basic Rules */}
         <div className="relative z-10 mt-8 pt-6 border-t border-slate-800">
-          <label className="block text-sm font-bold text-slate-100 mb-3">
+          <span className="block text-sm font-bold text-slate-100 mb-3">
             กฎการเทรดพื้นฐานที่ต้องรองรับ:
-          </label>
+          </span>
           <div className="flex flex-wrap gap-3">
             {[
               {
@@ -217,6 +220,7 @@ export default function PropMatcher({
             ].map((btn, idx) => (
               <button
                 key={idx}
+                type="button"
                 onClick={btn.toggle}
                 className={`flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-xs font-bold border transition-all ${
                   btn.active
@@ -240,6 +244,7 @@ export default function PropMatcher({
         {/* Toggle Button for Advanced Filters */}
         <div className="relative z-10 mt-8 pt-5 border-t border-slate-800 flex justify-center">
           <button
+            type="button"
             onClick={() => updateFilter("showAdvanced", !filters.showAdvanced)}
             className="text-xs font-bold text-slate-200 hover:text-cyan-300 flex items-center gap-2 transition-all py-2.5 px-5 rounded-2xl bg-slate-800/90 hover:bg-slate-800 border border-slate-700 hover:border-cyan-500/50 shadow-md"
           >
@@ -273,6 +278,7 @@ export default function PropMatcher({
                     return (
                       <button
                         key={p.id}
+                        type="button"
                         onClick={() => updateFilter("platform", p.id)}
                         className={`py-2 px-3 rounded-xl text-xs font-bold border transition-all ${
                           active
@@ -287,49 +293,36 @@ export default function PropMatcher({
                 </div>
               </div>
 
-              {/* Profit Split & Challenge Profit Dropdowns */}
-          <div className="bg-slate-950/40 p-4 rounded-2xl border border-slate-800">
-            <span className="block text-xs font-bold text-slate-100 mb-3">
-              💰 ส่วนแบ่งกำไร & โบนัสช่วงสอบ:
-            </span>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {/* Dropdown ช่องที่ 1: ส่วนแบ่งกำไร */}
-              <div className="relative">
-                <select
-                  value={filters.profitSplit || "all"}
-                  onChange={(e) => updateFilter("profitSplit", e.target.value)}
-                  className="w-full appearance-none rounded-xl bg-slate-900 border border-slate-700/80 px-3.5 py-2.5 pr-9 text-xs font-semibold text-slate-200 hover:border-cyan-500/60 focus:border-cyan-400 focus:outline-none focus:ring-1 focus:ring-cyan-400/50 transition cursor-pointer"
-                >
-                  <option value="all">ส่วนแบ่งกำไร: 80%+</option>
-                  <option value="90">90%+</option>
-                  <option value="100">100%</option>
-                </select>
-                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400">
-                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-                  </svg>
-                </div>
-              </div>
-
-              {/* Dropdown ช่องที่ 2: กำไรช่วงสอบ */}
-              <div className="relative">
-                <select
-                  value={filters.evalProfit || "all"}
-                  onChange={(e) => updateFilter("evalProfit", e.target.value)}
-                  className="w-full appearance-none rounded-xl bg-slate-900 border border-slate-700/80 px-3.5 py-2.5 pr-9 text-xs font-semibold text-slate-200 hover:border-cyan-500/60 focus:border-cyan-400 focus:outline-none focus:ring-1 focus:ring-cyan-400/50 transition cursor-pointer"
-                >
-                  <option value="all">กำไรช่วงสอบ: ทั้งหมด</option>
-                  <option value="none">ไม่มีกำไรช่วงสอบ</option>
-                  <option value="has_eval">🎁 มีกำไรช่วงสอบ เฟส1 หรือเฟส2</option>
-                </select>
-                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400">
-                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-                  </svg>
+              {/* Profit Split */}
+              <div className="bg-slate-950/40 p-4 rounded-2xl border border-slate-800">
+                <span className="block text-xs font-bold text-slate-100 mb-3">
+                  💰 ส่วนแบ่งกำไร (Profit Split):
+                </span>
+                <div className="flex flex-wrap gap-2">
+                  {[
+                    { id: "all", label: "มาตรฐาน (80%+)" },
+                    { id: "90", label: "สูงสุด 90%+" },
+                    { id: "challenge_profit", label: "🎁 มีกำไรช่วงสอบ 15%" },
+                  ].map((ps) => {
+                    const active = filters.profitSplit === ps.id;
+                    return (
+                      <button
+                        key={ps.id}
+                        type="button"
+                        onClick={() => updateFilter("profitSplit", ps.id)}
+                        className={`py-2 px-3 rounded-xl text-xs font-bold border transition-all ${
+                          active
+                            ? "bg-cyan-500/25 border-cyan-400 text-cyan-200 shadow-sm"
+                            : "bg-slate-800/70 border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white"
+                        }`}
+                      >
+                        {ps.label}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             </div>
-          </div>
 
             {/* Drawdown & Payout */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -346,6 +339,7 @@ export default function PropMatcher({
                     return (
                       <button
                         key={dd.id}
+                        type="button"
                         onClick={() => updateFilter("drawdownType", dd.id)}
                         className={`py-2 px-3 rounded-xl text-xs font-bold border transition-all text-center ${
                           active
@@ -362,29 +356,32 @@ export default function PropMatcher({
 
               <div className="bg-slate-950/40 p-4 rounded-2xl border border-slate-800">
                 <span className="block text-xs font-bold text-slate-100 mb-3">
-                {/* Payout Dropdown */}
-<div className="bg-slate-950/40 p-4 rounded-2xl border border-slate-800">
-  <span className="block text-xs font-bold text-slate-100 mb-3">
-    ⏱️ รอบการถอนกำไร (Payout):
-  </span>
-  <div className="relative">
-    <select
-      value={filters.payout || "all"}
-      onChange={(e) => updateFilter("payout", e.target.value)}
-      className="w-full appearance-none rounded-xl bg-slate-900 border border-slate-700/80 px-3.5 py-2.5 pr-9 text-xs font-semibold text-slate-200 hover:border-cyan-500/60 focus:border-cyan-400 focus:outline-none focus:ring-1 focus:ring-cyan-400/50 transition cursor-pointer"
-    >
-      <option value="all">รอบการถอน: ทั้งหมด</option>
-      <option value="14">รอบปกติ (14 วัน)</option>
-      <option value="fast">⚡ ถอนไวพิเศษ (5–8 วัน)</option>
-      <option value="on_demand">🚀 ถอนได้ทันที (On Demand)</option>
-    </select>
-    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400">
-      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-      </svg>
-    </div>
-  </div>
-</div>
+                  ⏱️ รอบการถอนกำไร (Payout):
+                </span>
+                <div className="grid grid-cols-2 gap-2.5">
+                  {[
+                    { id: "all", label: "รอบปกติ (14 วัน)" },
+                    { id: "fast", label: "⚡ ถอนไวพิเศษ (5–8 วัน)" },
+                  ].map((po) => {
+                    const active = filters.payoutSpeed === po.id;
+                    return (
+                      <button
+                        key={po.id}
+                        type="button"
+                        onClick={() => updateFilter("payoutSpeed", po.id)}
+                        className={`py-2 px-3 rounded-xl text-xs font-bold border transition-all text-center ${
+                          active
+                            ? "bg-cyan-500/25 border-cyan-400 text-cyan-200"
+                            : "bg-slate-800/70 border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white"
+                        }`}
+                      >
+                        {po.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
 
             {/* Special Rules */}
             <div className="bg-slate-950/40 p-4 rounded-2xl border border-slate-800">
@@ -393,6 +390,7 @@ export default function PropMatcher({
               </span>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 <button
+                  type="button"
                   onClick={() => updateFilter("noMinDays", !filters.noMinDays)}
                   className={`py-2.5 px-3 rounded-xl text-xs font-bold border text-left flex items-center justify-between transition-all ${
                     filters.noMinDays
@@ -405,6 +403,7 @@ export default function PropMatcher({
                 </button>
 
                 <button
+                  type="button"
                   onClick={() => updateFilter("noSlRequired", !filters.noSlRequired)}
                   className={`py-2.5 px-3 rounded-xl text-xs font-bold border text-left flex items-center justify-between transition-all ${
                     filters.noSlRequired
@@ -417,6 +416,7 @@ export default function PropMatcher({
                 </button>
 
                 <button
+                  type="button"
                   onClick={() => updateFilter("noConsistencyRule", !filters.noConsistencyRule)}
                   className={`py-2.5 px-3 rounded-xl text-xs font-bold border text-left flex items-center justify-between transition-all ${
                     filters.noConsistencyRule
@@ -429,6 +429,7 @@ export default function PropMatcher({
                 </button>
 
                 <button
+                  type="button"
                   onClick={() => updateFilter("scalingPlan", !filters.scalingPlan)}
                   className={`py-2.5 px-3 rounded-xl text-xs font-bold border text-left flex items-center justify-between transition-all ${
                     filters.scalingPlan
