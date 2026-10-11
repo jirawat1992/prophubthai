@@ -12,9 +12,12 @@ interface AccountDetail {
 interface PropFirm {
   id: string;
   name: string;
+  shortName: string;
   rating: string;
+  trustpilotReviews: string;
   highlight: string;
-  popularityRank: number; // ลำดับความนิยม (ผู้ใช้เยอะสุด)
+  thaiRankLabel: string;
+  popularityRank: number;
   accountSizes: {
     [key: string]: AccountDetail;
   };
@@ -24,21 +27,22 @@ interface PropFirm {
   discountCode: string;
   affLink: string;
   paymentMethods: string[];
-  userCountLabel: string; // ปริมาณผู้ใช้
 }
 
-// ข้อมูล 5 กองทุนยอดนิยม (เรียงตามปริมาณผู้ใช้งานจริง: อันดับ 1-5)
+// 🏆 5 อันดับยอดนิยม อ้างอิงสถิติ Trustpilot และความนิยมในไทยจริง
 const top5Firms: PropFirm[] = [
   {
     id: "ftmo",
     name: "FTMO",
-    rating: "4.9",
+    shortName: "FT",
+    rating: "4.8",
+    trustpilotReviews: "25,000+ รีวิวบน Trustpilot",
+    thaiRankLabel: "อันดับ 1 ในไทย (มั่นคงสูงสุด)",
     popularityRank: 1,
-    userCountLabel: "ผู้ใช้มากกว่า 50,000+ คน (สูงสุด)",
-    highlight: "อันดับ 1 มั่นคงที่สุดในโลก จ่ายเงินชัวร์ 100%",
+    highlight: "กองทุนอันดับ 1 ตลอดกาล จ่ายเงินชัวร์ 100%",
     accountSizes: { "100K": { price: 540, maxDailyLoss: 5000, maxTotalLoss: 10000 } },
     drawdownType: "Equity / Balance",
-    payoutCycle: "ทุก 14 วัน (ปรับเป็นสัปดาห์ได้)",
+    payoutCycle: "ทุก 14 วัน (ปรับเป็นรายสัปดาห์ได้)",
     features: ["เทรดชนข่าวได้ (Swing)", "ถือข้ามสัปดาห์ได้", "ใช้ EA ได้"],
     discountCode: "ลิงก์ตรง",
     affLink: "https://trader.ftmo.com/?affiliates=pOLOGuzllgOuwxOLSsKg",
@@ -47,25 +51,46 @@ const top5Firms: PropFirm[] = [
   {
     id: "funding-pips",
     name: "Funding Pips",
-    rating: "4.8",
+    shortName: "FP",
+    rating: "4.5",
+    trustpilotReviews: "23,000+ รีวิวบน Trustpilot",
+    thaiRankLabel: "ยอดนิยมอันดับ 1 สายคุ้มค่าในไทย",
     popularityRank: 2,
-    userCountLabel: "ผู้ใช้มากกว่า 42,000+ คน",
-    highlight: "ขวัญใจเทรดเดอร์ไทย ค่าสอบคุ้มค่า สเปรดแคบ ถอนไว",
+    highlight: "ค่าสอบคุ้มค่า สเปรดแคบ ถอนไวรอบ 5 วัน",
     accountSizes: { "100K": { price: 269, maxDailyLoss: 5000, maxTotalLoss: 10000 } },
     drawdownType: "Balance Based",
     payoutCycle: "ทุก 5 วัน (รายสัปดาห์)",
-    features: ["ถอนเงินไวสุด 5 วัน", "ค่าคอมมิชชั่นถูก", "ใช้ EA ได้"],
+    features: ["ถอนเงินไวสุด 5 วัน", "ค่าคอมมิชชั่นต่ำ", "ใช้ EA ได้"],
     discountCode: "7EKHW83Z",
     affLink: "https://app.fundingpips.com/register?referral_code=7EKHW83Z",
     paymentMethods: ["Crypto", "บัตรเครดิต"],
   },
   {
+    id: "the5ers",
+    name: "The5ers",
+    shortName: "5E",
+    rating: "4.8",
+    trustpilotReviews: "6,000+ รีวิวบน Trustpilot",
+    thaiRankLabel: "ยอดนิยมอันดับ 1 สาย Swing Trade",
+    popularityRank: 3,
+    highlight: "เปิดมาตั้งแต่ปี 2016 แผนสเกลพอร์ตโตเร็วสูงสุด $4M",
+    accountSizes: { "100K": { price: 495, maxDailyLoss: 5000, maxTotalLoss: 10000 } },
+    drawdownType: "Balance Based",
+    payoutCycle: "ทุก 14 วัน",
+    features: ["ถือข้ามสัปดาห์ได้", "เทรดชนข่าวได้", "สเกลพอร์ตได้สูงสุด $4M"],
+    discountCode: "S6LS",
+    affLink: "https://www.the5ers.com/?afmc=1fey",
+    paymentMethods: ["บัตรเครดิต/เดบิต", "Crypto"],
+  },
+  {
     id: "fundednext",
     name: "FundedNext",
-    rating: "4.7",
-    popularityRank: 3,
-    userCountLabel: "ผู้ใช้มากกว่า 35,000+ คน",
-    highlight: "รับส่วนแบ่งกำไร 15% ตั้งแต่ช่วงสอบ มีซัพพอร์ตภาษาไทย",
+    shortName: "FN",
+    rating: "4.6",
+    trustpilotReviews: "18,000+ รีวิวบน Trustpilot",
+    thaiRankLabel: "ยอดนิยมในไทย มีทีมซัพพอร์ตภาษาไทย",
+    popularityRank: 4,
+    highlight: "แบ่งกำไร 15% ตั้งแต่ช่วงสอบ กฎยืดหยุ่นสูง",
     accountSizes: { "100K": { price: 319, maxDailyLoss: 5000, maxTotalLoss: 10000 } },
     drawdownType: "Balance Based",
     payoutCycle: "ทุก 14 วัน",
@@ -77,10 +102,12 @@ const top5Firms: PropFirm[] = [
   {
     id: "wemastertrade",
     name: "WeMasterTrade",
-    rating: "4.7",
-    popularityRank: 4,
-    userCountLabel: "ผู้ใช้มากกว่า 28,000+ คน (สแกนจ่ายเยอะสุด)",
-    highlight: "สแกนจ่าย QR PromptPay เงินบาทไทยได้โดยตรง",
+    shortName: "WM",
+    rating: "4.6",
+    trustpilotReviews: "Trustpilot Rating 4.6",
+    thaiRankLabel: "อันดับ 1 รองรับสแกน QR PromptPay",
+    popularityRank: 5,
+    highlight: "สแกนจ่ายเงินบาทไทยได้ตรง ไม่ต้องใช้บัตรหรือ Crypto",
     accountSizes: { "100K": { price: 480, maxDailyLoss: 5000, maxTotalLoss: 10000 } },
     drawdownType: "Trailing / Balance",
     payoutCycle: "ทุก 14 วัน",
@@ -88,21 +115,6 @@ const top5Firms: PropFirm[] = [
     discountCode: "TTM30",
     affLink: "https://my.wemastertrade.com/register?ref=072952",
     paymentMethods: ["PromptPay (สแกน QR)", "Crypto", "บัตรเดบิต/เครดิต"],
-  },
-  {
-    id: "the5ers",
-    name: "The5ers",
-    rating: "4.8",
-    popularityRank: 5,
-    userCountLabel: "ผู้ใช้มากกว่า 25,000+ คน",
-    highlight: "สายสวิงเทรด บัญชี High Stakes แผนสเกลพอร์ตโตเร็ว",
-    accountSizes: { "100K": { price: 495, maxDailyLoss: 5000, maxTotalLoss: 10000 } },
-    drawdownType: "Balance Based",
-    payoutCycle: "ทุก 14 วัน",
-    features: ["ถือข้ามสัปดาห์ได้", "เทรดชนข่าวได้", "สเกลพอร์ตได้สูงสุด $4M"],
-    discountCode: "S6LS",
-    affLink: "https://www.the5ers.com/?afmc=1fey",
-    paymentMethods: ["บัตรเครดิต/เดบิต", "Crypto"],
   },
 ];
 
@@ -119,13 +131,13 @@ export default function Home() {
 
   const scrollLeft = () => {
     if (slideRef.current) {
-      slideRef.current.scrollBy({ left: -340, behavior: "smooth" });
+      slideRef.current.scrollBy({ left: -360, behavior: "smooth" });
     }
   };
 
   const scrollRight = () => {
     if (slideRef.current) {
-      slideRef.current.scrollBy({ left: 340, behavior: "smooth" });
+      slideRef.current.scrollBy({ left: 360, behavior: "smooth" });
     }
   };
 
@@ -163,45 +175,47 @@ export default function Home() {
         </p>
       </section>
 
-      {/* Smart Matcher Component */}
+      {/* Smart Matcher Component (ตัวกรองอัจฉริยะยังคงอยู่ตรงนี้) */}
       <PropMatcher />
 
-      {/* 🏆 TOP 5 Horizontal Slider Section */}
+      {/* 🏆 TOP 5 Rankings Horizontal Slider (ออกแบบตามต้นแบบ UI เนี้ยบ) */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-16 relative">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-6">
           <div>
-            <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-amber-500/10 text-amber-400 text-xs font-bold mb-2 border border-amber-500/20">
-              🥇 RANKINGS 2026
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 text-amber-400 text-xs font-bold mb-2.5 border border-amber-500/20">
+              🏆 RANKINGS 2026
             </div>
             <h2 className="text-2xl sm:text-3xl font-black text-white">
               TOP 5 อันดับยอดนิยมสูงสุด (Best Prop Firms)
             </h2>
             <p className="text-xs sm:text-sm text-slate-400 mt-1">
-              จัดลำดับจากปริมาณผู้ใช้งานสูงสุดและสถิติการจ่ายเงินจริง ความน่าเชื่อถือของคนไทย
+              จัดลำดับตามความนิยมในไทย สถิติรีวิว Trustpilot จริง และประวัติการจ่ายเงิน
             </p>
           </div>
 
-          {/* Slider Arrow Buttons (Desktop) */}
+          {/* ปุ่มลูกศรเลื่อนซ้าย-ขวา */}
           <div className="hidden md:flex gap-2">
             <button
               onClick={scrollLeft}
-              className="w-10 h-10 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center hover:bg-slate-800 hover:border-slate-700 transition-all text-slate-300"
+              aria-label="Previous"
+              className="w-10 h-10 rounded-full bg-slate-900 border border-slate-700/80 flex items-center justify-center hover:bg-slate-800 hover:border-cyan-400 text-slate-200 transition-all shadow-md active:scale-95"
             >
               ←
             </button>
             <button
               onClick={scrollRight}
-              className="w-10 h-10 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center hover:bg-slate-800 hover:border-slate-700 transition-all text-slate-300"
+              aria-label="Next"
+              className="w-10 h-10 rounded-full bg-slate-900 border border-slate-700/80 flex items-center justify-center hover:bg-slate-800 hover:border-cyan-400 text-slate-200 transition-all shadow-md active:scale-95"
             >
               →
             </button>
           </div>
         </div>
 
-        {/* Swipe Carousel Wrapper */}
+        {/* คอนเทนเนอร์การ์ดแบบปัดข้าง (Swipeable Scroll-Snap) */}
         <div
           ref={slideRef}
-          className="flex gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-6 scrollbar-hide"
+          className="flex gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-6 pt-4"
           style={{ scrollbarWidth: "none" }}
         >
           {top5Firms.map((firm) => {
@@ -209,73 +223,87 @@ export default function Home() {
             return (
               <div
                 key={firm.id}
-                className="snap-start shrink-0 w-[300px] sm:w-[350px] bg-slate-900/60 border border-slate-800 hover:border-cyan-500/35 rounded-2xl p-6 flex flex-col justify-between transition-all duration-300 relative backdrop-blur-sm"
+                className="snap-start shrink-0 w-[330px] sm:w-[410px] rounded-3xl bg-slate-900/90 border border-cyan-500/30 hover:border-cyan-400 p-6 flex flex-col justify-between transition-all duration-300 hover:shadow-[0_0_30px_rgba(6,182,212,0.2)] relative backdrop-blur-xl group"
               >
-                {/* Ranking Badge */}
-                <div className="absolute -top-3.5 -left-3 w-10 h-10 bg-amber-500 text-slate-950 font-black rounded-xl flex items-center justify-center shadow-lg shadow-amber-500/20 z-10 text-sm">
-                  #{firm.popularityRank}
+                {/* ป้ายอันดับ #1, #2, #3 */}
+                <div className="absolute -top-3.5 left-6 bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 font-black text-xs px-3.5 py-1 rounded-full shadow-md shadow-amber-500/20 z-10 flex items-center gap-1">
+                  <span>#{firm.popularityRank}</span>
                 </div>
 
                 <div>
-                  <div className="flex justify-between items-center mb-3.5 pl-6">
-                    <span className="text-[11px] font-bold text-amber-400 bg-amber-400/10 px-2.5 py-0.5 rounded-full border border-amber-400/20">
-                      ★ {firm.rating}
-                    </span>
-                    <span className="text-[11px] text-slate-400 font-semibold">
-                      {firm.userCountLabel}
-                    </span>
-                  </div>
-
-                  <h3 className="text-xl sm:text-2xl font-black text-white">{firm.name}</h3>
-                  <p className="text-xs text-emerald-400 font-semibold mb-4">{firm.highlight}</p>
-
-                  <div className="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800/80 flex items-baseline justify-between mb-4">
-                    <span className="text-xs text-slate-400">พอร์ตขนาด $100K</span>
-                    <span className="text-2xl font-black text-white">${currentAccount.price}</span>
-                  </div>
-
-                  <div className="space-y-2 text-[11px] text-slate-300">
-                    <div className="flex justify-between pb-1.5 border-b border-slate-800/50">
-                      <span className="text-slate-400">Daily Drawdown</span>
-                      <span className="font-semibold text-slate-200">5% ({firm.drawdownType})</span>
+                  {/* หัวการ์ด: โลโก้ + ชื่อ + คะแนนรีวิว */}
+                  <div className="flex items-center justify-between mb-4 mt-1">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-slate-800 to-slate-950 border border-slate-700 flex items-center justify-center text-cyan-300 font-black text-lg shadow-inner group-hover:border-cyan-400 transition-colors">
+                        {firm.shortName}
+                      </div>
+                      <div>
+                        <h3 className="text-xl font-black text-white group-hover:text-cyan-300 transition-colors">
+                          {firm.name}
+                        </h3>
+                        <p className="text-[11px] text-cyan-400 font-bold line-clamp-1">{firm.thaiRankLabel}</p>
+                      </div>
                     </div>
-                    <div className="flex justify-between pb-1.5 border-b border-slate-800/50">
-                      <span className="text-slate-400">Max Drawdown</span>
-                      <span className="font-semibold text-slate-200">10% (Static/Balance)</span>
-                    </div>
-                    <div className="flex justify-between pb-1.5 border-b border-slate-800/50">
-                      <span className="text-slate-400">รอบถอนเงิน</span>
-                      <span className="font-semibold text-cyan-400">{firm.payoutCycle}</span>
+
+                    <div className="text-right">
+                      <span className="text-xs font-bold text-amber-400 bg-amber-400/10 border border-amber-400/20 px-2.5 py-1 rounded-full inline-flex items-center gap-1">
+                        ★ {firm.rating}
+                      </span>
                     </div>
                   </div>
 
-                  <div className="mt-4 flex flex-wrap gap-1">
+                  {/* แถบระบุความน่าเชื่อถือ Trustpilot จริง */}
+                  <div className="text-[11px] text-slate-400 font-semibold mb-3 flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+                    <span>{firm.trustpilotReviews}</span>
+                  </div>
+
+                  {/* สรุปจุดเด่นประจำกองทุน */}
+                  <p className="text-xs text-slate-300 font-medium mb-4 line-clamp-1 bg-slate-950/40 p-2 rounded-xl border border-slate-800">
+                    💡 {firm.highlight}
+                  </p>
+
+                  {/* กล่องราคาและรอบการถอนเงิน */}
+                  <div className="grid grid-cols-2 gap-2.5 p-3.5 rounded-2xl bg-slate-950/80 border border-slate-800/80 mb-4">
+                    <div>
+                      <span className="text-[11px] text-slate-400 block">พอร์ตขนาด $100K</span>
+                      <span className="text-xl font-black text-white">${currentAccount.price}</span>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-[11px] text-slate-400 block">รอบการถอนกำไร</span>
+                      <span className="text-xs font-bold text-cyan-300 block mt-1">{firm.payoutCycle}</span>
+                    </div>
+                  </div>
+
+                  {/* จุดเด่นสำคัญ */}
+                  <div className="flex flex-wrap gap-1.5 mb-2">
                     {firm.features.map((f, i) => (
-                      <span key={i} className="text-[10px] bg-slate-800/50 text-slate-300 px-2 py-0.5 rounded">
+                      <span
+                        key={i}
+                        className="text-[10px] font-semibold bg-slate-800/80 text-slate-300 border border-slate-700/60 px-2.5 py-1 rounded-lg"
+                      >
                         ✓ {f}
                       </span>
                     ))}
                   </div>
                 </div>
 
-                <div className="mt-6 pt-4 border-t border-slate-800/80 space-y-3">
-                  <div className="flex items-center justify-between bg-slate-950/60 p-1.5 rounded-xl border border-slate-800 text-xs">
-                    <span className="font-mono font-bold text-cyan-400 pl-1">{firm.discountCode}</span>
-                    <button
-                      onClick={() => handleCopy(firm.discountCode)}
-                      className="px-2 py-0.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg text-[10px] font-semibold transition-colors"
-                    >
-                      {copiedCode === firm.discountCode ? "✓ คัดลอกแล้ว!" : "คัดลอก"}
-                    </button>
-                  </div>
+                {/* ปุ่มคัดลอกโค้ดและปุ่มสมัคร */}
+                <div className="mt-5 pt-4 border-t border-slate-800/80 flex items-center gap-2">
+                  <button
+                    onClick={() => handleCopy(firm.discountCode)}
+                    className="flex-1 py-2.5 px-3 rounded-xl bg-slate-800/90 hover:bg-slate-800 border border-slate-700 text-xs font-bold text-slate-200 transition-all flex items-center justify-center gap-1 hover:border-slate-500 active:scale-95"
+                  >
+                    <span>{copiedCode === firm.discountCode ? "✓ คัดลอกแล้ว" : `โค้ด: ${firm.discountCode}`}</span>
+                  </button>
 
                   <a
                     href={firm.affLink}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="block w-full text-center py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 text-slate-950 font-black text-xs transition-all shadow-md shadow-cyan-500/10"
+                    className="flex-1 py-2.5 px-3 text-center rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black text-xs transition-all shadow-md shadow-cyan-500/20 active:scale-95"
                   >
-                    สมัครสอบ / ดูรายละเอียด →
+                    สมัครสอบ →
                   </a>
                 </div>
               </div>
@@ -284,7 +312,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 📚 Popular Articles & Guides Section */}
+      {/* 📚 ส่วนบทความและคู่มือยอดนิยม (Knowledge Hub) */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-20">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 pb-4 border-b border-slate-800">
           <div>
