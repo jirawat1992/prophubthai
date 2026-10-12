@@ -2,6 +2,7 @@
 
 import { useState, useRef, useMemo } from "react";
 import PropMatcher, { FilterState } from "./components/PropMatcher";
+import FirmLogo from "./components/FirmLogo";
 
 interface AccountDetail {
   price: number;
@@ -21,15 +22,15 @@ interface PropFirm {
   accountSizes: {
     [key: string]: AccountDetail;
   };
-  models: string[]; // "2-step", "1-step", "instant"
-  drawdownType: string; // "equity_balance", "balance", "trailing"
+  models: string[];
+  drawdownType: string;
   payoutCycle: string;
-  payoutDays: number; // 5, 8, 14
+  payoutDays: number;
   features: string[];
   discountCode: string;
   affLink: string;
   paymentMethods: string[];
-  platforms: string[]; // "mt5", "ctrader", "tradingview", "tradelocker", "dxtrade"
+  platforms: string[];
   hasPromptPay: boolean;
   allowNews: boolean;
   allowWeekend: boolean;
@@ -38,7 +39,7 @@ interface PropFirm {
   noSlRequired: boolean;
   noConsistencyRule: boolean;
   scalingPlan: boolean;
-  profitSplitRate: number; // 80, 90
+  profitSplitRate: number;
   hasChallengeProfit: boolean;
 }
 
@@ -61,7 +62,7 @@ const propFirms: PropFirm[] = [
     },
     models: ["2-step"],
     drawdownType: "equity_balance",
-    payoutCycle: "ทุก 14 วัน (ปรับเป็นรายสัปดาห์ได้)",
+    payoutCycle: "ทุก 14 วัน",
     payoutDays: 14,
     features: ["เทรดชนข่าวได้ (Swing)", "ถือข้ามสัปดาห์ได้", "ใช้ EA ได้"],
     discountCode: "ลิงก์ตรง",
@@ -440,32 +441,22 @@ export default function Home() {
     setFilters(initialFilters);
   };
 
-  // ⚡ Reactive Filter Logic: คัดกรองและตัดกองทุนที่ไม่ตรงเงื่อนไขออกทันที
   const filteredFirms = useMemo(() => {
     return propFirms.filter((firm) => {
-      // 1. Model Type
       if (filters.modelType !== "all" && !firm.models.includes(filters.modelType)) {
         return false;
       }
-
-      // 2. Account Size (ตรวจสอบว่ามีพอร์ตไซส์นี้หรือไม่)
       if (filters.accountSize !== "all" && filters.accountSize !== "custom") {
         if (!firm.accountSizes[filters.accountSize]) {
           return false;
         }
       }
-
-      // 3. Payment Method
       if (filters.paymentMethod === "promptpay" && !firm.hasPromptPay) {
         return false;
       }
-
-      // 4. Trading Rules
       if (filters.allowNews && !firm.allowNews) return false;
       if (filters.allowWeekend && !firm.allowWeekend) return false;
       if (filters.allowEA && !firm.allowEA) return false;
-
-      // 5. Advanced Filters
       if (filters.platform !== "all" && !firm.platforms.includes(filters.platform)) {
         return false;
       }
@@ -493,7 +484,6 @@ export default function Home() {
       if (filters.scalingPlan && !firm.scalingPlan) {
         return false;
       }
-
       return true;
     });
   }, [filters]);
@@ -536,11 +526,11 @@ export default function Home() {
           เปรียบเทียบ <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">พอร์ตกองทุนที่ดีที่สุด</span>
         </h1>
         <p className="mt-4 text-sm sm:text-base text-slate-400 max-w-2xl mx-auto font-light">
-          คลังความรู้การสอบกองทุน กฏและเงื่อนไขการเทรด โค้ดส่วนลด ระบบคัดกรองกองทุน อับเดตข้อมูลตรงสำหรับเทรดเดอร์ไทย
+          เทียบกฎ Drawdown, ราคาค่าสอบ, กฎเทรดข่าว พร้อมรับส่วนลดค่าสอบทันที อัปเดตข้อมูลตรงสำหรับเทรดเดอร์ไทย
         </p>
       </section>
 
-      {/* Smart Matcher Component พร้อมรับและส่งตัวกรอง */}
+      {/* Smart Matcher */}
       <PropMatcher
         filters={filters}
         onFilterChange={setFilters}
@@ -548,18 +538,18 @@ export default function Home() {
         resultCount={filteredFirms.length}
       />
 
-      {/* 🏆 Horizontal Slider: แสดงผลกองทุนที่ผ่านเกณฑ์ */}
+      {/* 🏆 Horizontal Slider: แสดงผลกองทุนตามเงื่อนไข (สไตล์ริบบิ้นแท็ก + โลโก้) */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-16 relative">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-6">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-8">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 text-amber-400 text-xs font-bold mb-2.5 border border-amber-500/20">
-              🏆 กองทุนที่ตรงตามเงื่อนไข ({filteredFirms.length} ค่าย)
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/15 text-cyan-300 text-xs font-bold mb-3 border border-cyan-500/30">
+              🏆 ผลการค้นหา ({filteredFirms.length} กองทุนที่ตรงเงื่อนไข)
             </div>
             <h2 className="text-2xl sm:text-3xl font-black text-white">
-              ผลการค้นหากองทุนที่ตอบโจทย์คุณ
+              TOP อันดับยอดนิยมสูงสุด
             </h2>
             <p className="text-xs sm:text-sm text-slate-400 mt-1">
-              จัดลำดับตามความนิยมในไทย สถิติรีวิว Trustpilot จริง และประวัติการจ่ายเงิน
+              จัดลำดับจากปริมาณผู้ใช้งานสูงสุดและสถิติการจ่ายเงินจริง
             </p>
           </div>
 
@@ -568,14 +558,14 @@ export default function Home() {
               <button
                 onClick={scrollLeft}
                 aria-label="Previous"
-                className="w-10 h-10 rounded-full bg-slate-900 border border-slate-700/80 flex items-center justify-center hover:bg-slate-800 hover:border-cyan-400 text-slate-200 transition-all shadow-md active:scale-95"
+                className="w-10 h-10 rounded-full bg-slate-900/90 border border-slate-700/80 flex items-center justify-center hover:bg-slate-800 hover:border-cyan-400 text-slate-200 transition-all shadow-lg active:scale-95"
               >
                 ←
               </button>
               <button
                 onClick={scrollRight}
                 aria-label="Next"
-                className="w-10 h-10 rounded-full bg-slate-900 border border-slate-700/80 flex items-center justify-center hover:bg-slate-800 hover:border-cyan-400 text-slate-200 transition-all shadow-md active:scale-95"
+                className="w-10 h-10 rounded-full bg-slate-900/90 border border-slate-700/80 flex items-center justify-center hover:bg-slate-800 hover:border-cyan-400 text-slate-200 transition-all shadow-lg active:scale-95"
               >
                 →
               </button>
@@ -583,13 +573,12 @@ export default function Home() {
           )}
         </div>
 
-        {/* ถ้าไม่มีกองทุนใดตรงเงื่อนไขเลย */}
         {filteredFirms.length === 0 ? (
           <div className="bg-slate-900/60 border border-slate-800 rounded-3xl p-12 text-center my-6">
             <span className="text-4xl block mb-3">🔍</span>
             <h3 className="text-lg font-bold text-white">ไม่พบกองทุนที่ตรงตามเงื่อนไขทั้งหมดของคุณ</h3>
             <p className="text-xs text-slate-400 mt-1 mb-5">
-              ลองลดเงื่อนไขบางข้อ หรือปรับตัวกรองแพลตฟอร์ม/ขนาดพอร์ตให้กว้างขึ้น
+              ลองลดเงื่อนไขบางข้อ หรือปรับขนาดพอร์ต/แพลตฟอร์มให้กว้างขึ้น
             </p>
             <button
               onClick={handleResetFilters}
@@ -599,97 +588,94 @@ export default function Home() {
             </button>
           </div>
         ) : (
-          /* คอนเทนเนอร์การ์ดแบบปัดข้าง */
           <div
             ref={slideRef}
             className="flex gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-6 pt-4"
             style={{ scrollbarWidth: "none" }}
           >
             {filteredFirms.map((firm) => {
-              // ดึงราคาตามพอร์ตที่ผู้ใช้เลือก (ถ้าไม่มีให้ใช้ 100K เป็นฐาน)
               const selectedSize =
                 filters.accountSize !== "all" && filters.accountSize !== "custom" && firm.accountSizes[filters.accountSize]
                   ? filters.accountSize
                   : "100K";
               const currentAccount = firm.accountSizes[selectedSize] || Object.values(firm.accountSizes)[0];
+              const isTop1 = firm.popularityRank === 1;
 
               return (
                 <div
                   key={firm.id}
-                  className="snap-start shrink-0 w-[330px] sm:w-[410px] rounded-3xl bg-slate-900/90 border border-cyan-500/30 hover:border-cyan-400 p-6 flex flex-col justify-between transition-all duration-300 hover:shadow-[0_0_30px_rgba(6,182,212,0.2)] relative backdrop-blur-xl group"
+                  className="snap-start shrink-0 w-[350px] sm:w-[440px] rounded-3xl bg-[#09141f]/90 border border-cyan-500/30 hover:border-cyan-400/80 p-6 pt-7 flex flex-col justify-between transition-all duration-300 hover:shadow-[0_0_35px_rgba(6,182,212,0.2)] relative backdrop-blur-xl group overflow-hidden"
                 >
-                  <div className="absolute -top-3.5 left-6 bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 font-black text-xs px-3.5 py-1 rounded-full shadow-md shadow-amber-500/20 z-10 flex items-center gap-1">
-                    <span>#{firm.popularityRank}</span>
+                  {/* 🏷️ 1. ป้ายแท็กริบบิ้นมุมซ้ายบน */}
+                  <div
+                    className={`absolute top-0 left-0 w-12 h-10 flex items-center justify-center font-black text-sm tracking-wider shadow-md rounded-br-2xl ${
+                      isTop1
+                        ? "bg-gradient-to-br from-amber-300 via-amber-400 to-amber-500 text-slate-950 shadow-amber-500/30"
+                        : "bg-gradient-to-br from-slate-200 via-slate-300 to-cyan-200 text-slate-900 shadow-cyan-500/20"
+                    }`}
+                  >
+                    #{firm.popularityRank}
                   </div>
 
                   <div>
-                    <div className="flex items-center justify-between mb-4 mt-1">
-                      <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-slate-800 to-slate-950 border border-slate-700 flex items-center justify-center text-cyan-300 font-black text-lg shadow-inner group-hover:border-cyan-400 transition-colors">
-                          {firm.shortName}
+                    {/* 🏷️ 2. Header: โลโก้ + ชื่อ + เรตติ้ง */}
+                    <div className="flex items-center justify-between pl-9 mb-5">
+                      <div className="flex items-center gap-3.5">
+                        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-slate-900 to-black border border-slate-700/80 flex items-center justify-center p-2 shadow-inner group-hover:border-cyan-400/50 transition-colors shrink-0">
+                          <FirmLogo id={firm.id} />
                         </div>
+
                         <div>
-                          <h3 className="text-xl font-black text-white group-hover:text-cyan-300 transition-colors">
+                          <h3 className="text-xl sm:text-2xl font-black text-white group-hover:text-cyan-300 transition-colors leading-tight">
                             {firm.name}
                           </h3>
-                          <p className="text-[11px] text-cyan-400 font-bold line-clamp-1">{firm.thaiRankLabel}</p>
+                          <p className="text-xs text-slate-400 font-medium line-clamp-1 mt-0.5">
+                            {firm.highlight}
+                          </p>
                         </div>
                       </div>
 
-                      <div className="text-right">
-                        <span className="text-xs font-bold text-amber-400 bg-amber-400/10 border border-amber-400/20 px-2.5 py-1 rounded-full inline-flex items-center gap-1">
-                          ★ {firm.rating}
-                        </span>
+                      <div className="flex items-center gap-1 text-amber-400 font-bold text-sm bg-amber-400/10 px-2.5 py-1 rounded-xl border border-amber-400/20 shrink-0">
+                        <span>★</span>
+                        <span>{firm.rating}</span>
                       </div>
                     </div>
 
-                    <div className="text-[11px] text-slate-400 font-semibold mb-3 flex items-center gap-1.5">
-                      <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
-                      <span>{firm.trustpilotReviews}</span>
-                    </div>
-
-                    <p className="text-xs text-slate-300 font-medium mb-4 line-clamp-1 bg-slate-950/40 p-2 rounded-xl border border-slate-800">
-                      💡 {firm.highlight}
-                    </p>
-
-                    <div className="grid grid-cols-2 gap-2.5 p-3.5 rounded-2xl bg-slate-950/80 border border-slate-800/80 mb-4">
+                    {/* 🏷️ 3. สถิติพอร์ต 2 คอลัมน์ */}
+                    <div className="grid grid-cols-2 gap-4 py-3.5 px-4 rounded-2xl bg-black/40 border border-slate-800/80 mb-5">
                       <div>
-                        <span className="text-[11px] text-slate-400 block">พอร์ตขนาด ${selectedSize}</span>
-                        <span className="text-xl font-black text-white">${currentAccount.price}</span>
-                      </div>
-                      <div className="text-right">
-                        <span className="text-[11px] text-slate-400 block">รอบการถอนกำไร</span>
-                        <span className="text-xs font-bold text-cyan-300 block mt-1">{firm.payoutCycle}</span>
-                      </div>
-                    </div>
-
-                    <div className="flex flex-wrap gap-1.5 mb-2">
-                      {firm.features.map((f, i) => (
-                        <span
-                          key={i}
-                          className="text-[10px] font-semibold bg-slate-800/80 text-slate-300 border border-slate-700/60 px-2.5 py-1 rounded-lg"
-                        >
-                          ✓ {f}
+                        <span className="text-[11px] text-slate-400 block font-medium">
+                          ขนาดพอร์ต {selectedSize} / ราคา
                         </span>
-                      ))}
+                        <span className="text-lg sm:text-xl font-black text-white block mt-0.5">
+                          ${currentAccount.price}
+                        </span>
+                      </div>
+                      <div className="border-l border-slate-800/80 pl-4">
+                        <span className="text-[11px] text-slate-400 block font-medium">รอบการถอนกำไร</span>
+                        <span className="text-sm sm:text-base font-bold text-cyan-400 block mt-0.5">
+                          {firm.payoutCycle}
+                        </span>
+                      </div>
                     </div>
                   </div>
 
-                  <div className="mt-5 pt-4 border-t border-slate-800/80 flex items-center gap-2">
+                  {/* 🏷️ 4. แถบปุ่มคู่ด้านล่าง */}
+                  <div className="flex items-center gap-3 pt-2">
                     <button
                       onClick={() => handleCopy(firm.discountCode)}
-                      className="flex-1 py-2.5 px-3 rounded-xl bg-slate-800/90 hover:bg-slate-800 border border-slate-700 text-xs font-bold text-slate-200 transition-all flex items-center justify-center gap-1 hover:border-slate-500 active:scale-95"
+                      className="flex-1 py-2.5 px-3 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-cyan-500/40 text-xs font-bold text-cyan-300 transition-all text-center truncate hover:border-cyan-400 active:scale-95 shadow-sm"
                     >
-                      <span>{copiedCode === firm.discountCode ? "✓ คัดลอกแล้ว" : `โค้ด: ${firm.discountCode}`}</span>
+                      {copiedCode === firm.discountCode ? "✓ คัดลอกแล้ว" : `โค้ด: ${firm.discountCode}`}
                     </button>
 
                     <a
                       href={firm.affLink}
                       target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex-1 py-2.5 px-3 text-center rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black text-xs transition-all shadow-md shadow-cyan-500/20 active:scale-95"
+                      rel="noopener noreferrer sponsored"
+                      className="flex-1 py-2.5 px-3 rounded-xl bg-gradient-to-r from-cyan-400 via-sky-400 to-blue-500 hover:from-cyan-300 hover:to-blue-400 text-slate-950 font-black text-xs transition-all text-center truncate shadow-lg shadow-cyan-500/25 active:scale-95"
                     >
-                      สมัครสอบ →
+                      สมัครสอบ/ดูรายละเอียด
                     </a>
                   </div>
                 </div>
