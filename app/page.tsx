@@ -768,8 +768,8 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-24 text-center text-xs text-slate-500 border-t border-slate-800/80 pt-8">
-        <p>© 2026 PropHub TH. รวบรวมข้อมูลเปรียบเทียบพอร์ตกองทุน Forex เพื่อเทรดเดอร์ไทย</p>
-        <p className="mt-2 text-slate-600">การซื้อพอร์ตสอบมีความเสี่ยง โปรดศึกษาเงื่อนไขและกฎของแต่ละกองทุนอย่างละเอียดก่อนตัดสินใจ</p>
+        <p>© 2026 PropHubThai. คลังความรู้ด้านกองทุน(PropFirm) เพื่อเลือกกองทุนที่ใช่สำหรับคุณ</p>
+        <p className="mt-2 text-slate-600">การซื้อพอร์ตกองทุนมีความเสี่ยง โปรดศึกษาเงื่อนไขและกฎของแต่ละกองทุนอย่างละเอียดก่อนตัดสินใจ</p>
       </footer>
     </main>
   );
