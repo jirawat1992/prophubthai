@@ -17,6 +17,7 @@ export interface FilterState {
   noMinDays: boolean;
   noSlRequired: boolean;
   scalingPlan: boolean;
+  hasRefund: boolean; // 👈 เพิ่มฟิลด์นี้
 }
 
 interface PropMatcherProps {
@@ -251,7 +252,7 @@ export default function PropMatcher({
             <span>
               {filters.showAdvanced
                 ? "▲ ซ่อนตัวกรองเงื่อนไขเชิงลึก"
-                : "▼ ตัวกรองเงื่อนไขเชิงลึก (แพลตฟอร์ม, Drawdown, Profit Split, SL, Scaling)"}
+                : "▼ ตัวกรองเงื่อนไขเชิงลึก (แพลตฟอร์ม, Refund คืนค่าสอบ, Drawdown, Profit Split)"}
             </span>
           </button>
         </div>
@@ -383,12 +384,26 @@ export default function PropMatcher({
               </div>
             </div>
 
-            {/* Special Rules */}
+            {/* Special Rules & Refund */}
             <div className="bg-slate-950/40 p-4 rounded-2xl border border-slate-800">
               <span className="block text-xs font-bold text-slate-100 mb-3">
-                ⚖️ กฎเกณฑ์พิเศษและโอกาสเติบโต:
+                ⚖️ กฎเกณฑ์พิเศษและการคืนเงินค่าสอบ:
               </span>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+                {/* 💰 ปุ่มกรอง Refund คืนเงินค่าสอบ 100% */}
+                <button
+                  type="button"
+                  onClick={() => updateFilter("hasRefund", !filters.hasRefund)}
+                  className={`py-2.5 px-3 rounded-xl text-xs font-bold border text-left flex items-center justify-between transition-all ${
+                    filters.hasRefund
+                      ? "bg-emerald-500/25 border-emerald-400 text-emerald-200 shadow-[0_0_15px_rgba(16,185,129,0.2)]"
+                      : "bg-slate-800/70 border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white"
+                  }`}
+                >
+                  <span>💸 คืนค่าสอบ 100% (Refund)</span>
+                  <span className="font-black text-sm">{filters.hasRefund ? "✓" : "+"}</span>
+                </button>
+
                 <button
                   type="button"
                   onClick={() => updateFilter("noMinDays", !filters.noMinDays)}
@@ -411,7 +426,7 @@ export default function PropMatcher({
                       : "bg-slate-800/70 border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white"
                   }`}
                 >
-                  <span>🔓 ไม่บังคับตั้ง Stop Loss</span>
+                  <span>🔓 ไม่บังคับ Stop Loss</span>
                   <span className="font-black text-sm">{filters.noSlRequired ? "✓" : "+"}</span>
                 </button>
 
@@ -437,7 +452,7 @@ export default function PropMatcher({
                       : "bg-slate-800/70 border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white"
                   }`}
                 >
-                  <span>🚀 สเกลพอร์ตโตได้ ($1M+)</span>
+                  <span>🚀 สเกลพอร์ต ($1M+)</span>
                   <span className="font-black text-sm">{filters.scalingPlan ? "✓" : "+"}</span>
                 </button>
               </div>

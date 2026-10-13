@@ -22,15 +22,15 @@ interface PropFirm {
   accountSizes: {
     [key: string]: AccountDetail;
   };
-  models: string[]; // "2-step", "1-step", "instant"
-  drawdownType: string; // "equity_balance", "balance", "trailing"
+  models: string[];
+  drawdownType: string;
   payoutCycle: string;
-  payoutDays: number; // 5, 8, 14
+  payoutDays: number;
   features: string[];
   discountCode: string;
   affLink: string;
   paymentMethods: string[];
-  platforms: string[]; // "mt5", "ctrader", "tradingview", "tradelocker", "dxtrade"
+  platforms: string[];
   hasPromptPay: boolean;
   allowNews: boolean;
   allowWeekend: boolean;
@@ -39,8 +39,10 @@ interface PropFirm {
   noSlRequired: boolean;
   noConsistencyRule: boolean;
   scalingPlan: boolean;
-  profitSplitRate: number; // 80, 90
+  profitSplitRate: number;
   hasChallengeProfit: boolean;
+  hasRefund: boolean;      // 👈 คืนเงินค่าสอบไหม
+  refundText: string;      // 👈 ข้อความแสดงรายละเอียด เช่น คืน 100% รอบถอนแรก
 }
 
 const propFirms: PropFirm[] = [
@@ -62,7 +64,7 @@ const propFirms: PropFirm[] = [
     },
     models: ["2-step"],
     drawdownType: "equity_balance",
-    payoutCycle: "ทุก 14 วัน (ปรับเป็นรายสัปดาห์ได้)",
+    payoutCycle: "ทุก 14 วัน",
     payoutDays: 14,
     features: ["เทรดชนข่าวได้ (Swing)", "ถือข้ามสัปดาห์ได้", "ใช้ EA ได้"],
     discountCode: "ลิงก์ตรง",
@@ -79,6 +81,8 @@ const propFirms: PropFirm[] = [
     scalingPlan: true,
     profitSplitRate: 90,
     hasChallengeProfit: false,
+    hasRefund: true,
+    refundText: "คืนค่าสอบ 100% พร้อมรอบถอนแรก",
   },
   {
     id: "funding-pips",
@@ -116,6 +120,8 @@ const propFirms: PropFirm[] = [
     scalingPlan: true,
     profitSplitRate: 90,
     hasChallengeProfit: false,
+    hasRefund: true,
+    refundText: "คืนค่าสอบ 100% ในรอบถอนแรก",
   },
   {
     id: "the5ers",
@@ -153,6 +159,8 @@ const propFirms: PropFirm[] = [
     scalingPlan: true,
     profitSplitRate: 90,
     hasChallengeProfit: false,
+    hasRefund: true,
+    refundText: "คืนค่าสอบ 100% เมื่อสอบผ่าน",
   },
   {
     id: "fundednext",
@@ -189,6 +197,8 @@ const propFirms: PropFirm[] = [
     scalingPlan: true,
     profitSplitRate: 90,
     hasChallengeProfit: true,
+    hasRefund: true,
+    refundText: "คืนค่าสอบสูงสุด 110% - 120%",
   },
   {
     id: "wemastertrade",
@@ -225,6 +235,8 @@ const propFirms: PropFirm[] = [
     scalingPlan: true,
     profitSplitRate: 85,
     hasChallengeProfit: false,
+    hasRefund: true,
+    refundText: "คืนค่าสอบเมื่อผ่านเกณฑ์การเทรด",
   },
   {
     id: "ic-funded",
@@ -260,6 +272,8 @@ const propFirms: PropFirm[] = [
     scalingPlan: true,
     profitSplitRate: 85,
     hasChallengeProfit: false,
+    hasRefund: true,
+    refundText: "คืนค่าสอบ 100% พร้อมรอบถอนแรก",
   },
   {
     id: "blue-guardian",
@@ -295,6 +309,8 @@ const propFirms: PropFirm[] = [
     scalingPlan: true,
     profitSplitRate: 85,
     hasChallengeProfit: false,
+    hasRefund: true,
+    refundText: "คืนค่าสอบ 100% ในรอบถอนแรก",
   },
   {
     id: "e8-markets",
@@ -331,6 +347,8 @@ const propFirms: PropFirm[] = [
     scalingPlan: true,
     profitSplitRate: 80,
     hasChallengeProfit: false,
+    hasRefund: true,
+    refundText: "คืนค่าสอบ 100% พร้อมการถอนครั้งแรก",
   },
   {
     id: "alpha-capital",
@@ -367,6 +385,8 @@ const propFirms: PropFirm[] = [
     scalingPlan: true,
     profitSplitRate: 90,
     hasChallengeProfit: false,
+    hasRefund: true,
+    refundText: "คืนค่าสอบ 100% ในรอบถอนแรก",
   },
   {
     id: "upcomers",
@@ -403,6 +423,8 @@ const propFirms: PropFirm[] = [
     scalingPlan: true,
     profitSplitRate: 85,
     hasChallengeProfit: false,
+    hasRefund: true,
+    refundText: "คืนค่าสอบเต็มจำนวนในรอบแรก",
   },
 ];
 
@@ -423,6 +445,7 @@ const initialFilters: FilterState = {
   noMinDays: false,
   noSlRequired: false,
   scalingPlan: false,
+  hasRefund: false,
 };
 
 export default function Home() {
@@ -441,32 +464,22 @@ export default function Home() {
     setFilters(initialFilters);
   };
 
-  // ⚡ Reactive Filter Logic: คัดกรองและตัดกองทุนที่ไม่ตรงเงื่อนไขออกทันที
   const filteredFirms = useMemo(() => {
     return propFirms.filter((firm) => {
-      // 1. Model Type
       if (filters.modelType !== "all" && !firm.models.includes(filters.modelType)) {
         return false;
       }
-
-      // 2. Account Size (ตรวจสอบว่ามีพอร์ตไซส์นี้หรือไม่)
       if (filters.accountSize !== "all" && filters.accountSize !== "custom") {
         if (!firm.accountSizes[filters.accountSize]) {
           return false;
         }
       }
-
-      // 3. Payment Method
       if (filters.paymentMethod === "promptpay" && !firm.hasPromptPay) {
         return false;
       }
-
-      // 4. Trading Rules
       if (filters.allowNews && !firm.allowNews) return false;
       if (filters.allowWeekend && !firm.allowWeekend) return false;
       if (filters.allowEA && !firm.allowEA) return false;
-
-      // 5. Advanced Filters
       if (filters.platform !== "all" && !firm.platforms.includes(filters.platform)) {
         return false;
       }
@@ -494,7 +507,10 @@ export default function Home() {
       if (filters.scalingPlan && !firm.scalingPlan) {
         return false;
       }
-
+      // 👈 ตรวจสอบตัวกรอง Refund
+      if (filters.hasRefund && !firm.hasRefund) {
+        return false;
+      }
       return true;
     });
   }, [filters]);
@@ -537,11 +553,11 @@ export default function Home() {
           เปรียบเทียบ <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">พอร์ตกองทุนที่ดีที่สุด</span>
         </h1>
         <p className="mt-4 text-sm sm:text-base text-slate-400 max-w-2xl mx-auto font-light">
-          คลังความรู้การสอบกองทุน กฏและเงื่อนไขการเทรด โค้ดส่วนลด ระบบคัดกรองกองทุน อับเดตข้อมูลตรงสำหรับเทรดเดอร์ไทย
+          เทียบกฎ Drawdown, ราคาค่าสอบ, กฎเทรดข่าว พร้อมรับส่วนลดค่าสอบทันที อัปเดตข้อมูลตรงสำหรับเทรดเดอร์ไทย
         </p>
       </section>
 
-      {/* Smart Matcher Component พร้อมรับและส่งตัวกรอง */}
+      {/* Smart Matcher พร้อมปุ่มกรอง Refund */}
       <PropMatcher
         filters={filters}
         onFilterChange={setFilters}
@@ -549,9 +565,8 @@ export default function Home() {
         resultCount={filteredFirms.length}
       />
 
-      {/* 🏆 Horizontal Slider: แสดงผลกองทุนตามเงื่อนไข (สไตล์ริบบิ้นแท็ก + โลโก้) */}
+      {/* 🏆 Horizontal Slider: แสดงผลการ์ดพร้อม Badge คืนค่าสอบ */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-16 relative">
-        {/* Header Section */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-8">
           <div>
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/15 text-cyan-300 text-xs font-bold mb-3 border border-cyan-500/30">
@@ -585,7 +600,6 @@ export default function Home() {
           )}
         </div>
 
-        {/* กรณีไม่พบกองทุนตรงเงื่อนไข */}
         {filteredFirms.length === 0 ? (
           <div className="bg-slate-900/60 border border-slate-800 rounded-3xl p-12 text-center my-6">
             <span className="text-4xl block mb-3">🔍</span>
@@ -601,7 +615,6 @@ export default function Home() {
             </button>
           </div>
         ) : (
-          /* Slider Container */
           <div
             ref={slideRef}
             className="flex gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-6 pt-4"
@@ -620,7 +633,7 @@ export default function Home() {
                   key={firm.id}
                   className="snap-start shrink-0 w-[350px] sm:w-[440px] rounded-3xl bg-[#09141f]/90 border border-cyan-500/30 hover:border-cyan-400/80 p-6 pt-7 flex flex-col justify-between transition-all duration-300 hover:shadow-[0_0_35px_rgba(6,182,212,0.2)] relative backdrop-blur-xl group overflow-hidden"
                 >
-                  {/* 🏷️ 1. ป้ายแท็กริบบิ้นมุมซ้ายบน (#1, #2) */}
+                  {/* 🏷️ 1. ป้ายแท็กริบบิ้นมุมซ้ายบน */}
                   <div
                     className={`absolute top-0 left-0 w-12 h-10 flex items-center justify-center font-black text-sm tracking-wider shadow-md rounded-br-2xl ${
                       isTop1
@@ -633,9 +646,8 @@ export default function Home() {
 
                   <div>
                     {/* 🏷️ 2. Header: โลโก้ + ชื่อ + เรตติ้ง */}
-                    <div className="flex items-center justify-between pl-9 mb-5">
+                    <div className="flex items-center justify-between pl-9 mb-4">
                       <div className="flex items-center gap-3.5">
-                        {/* กล่องโลโก้กองทุน */}
                         <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-slate-900 to-black border border-slate-700/80 flex items-center justify-center p-2 shadow-inner group-hover:border-cyan-400/50 transition-colors shrink-0">
                           <FirmLogo id={firm.id} />
                         </div>
@@ -650,11 +662,16 @@ export default function Home() {
                         </div>
                       </div>
 
-                      {/* คะแนนรีวิว ★ */}
                       <div className="flex items-center gap-1 text-amber-400 font-bold text-sm bg-amber-400/10 px-2.5 py-1 rounded-xl border border-amber-400/20 shrink-0">
                         <span>★</span>
                         <span>{firm.rating}</span>
                       </div>
+                    </div>
+
+                    {/* 🏷️ 2.1 ป้าย Badge คืนค่าสอบ (Refund Highlight Badge) */}
+                    <div className="mb-3.5 flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-semibold">
+                      <span>✨</span>
+                      <span>{firm.refundText}</span>
                     </div>
 
                     {/* 🏷️ 3. สถิติพอร์ต 2 คอลัมน์ */}
@@ -700,7 +717,6 @@ export default function Home() {
           </div>
         )}
       </section>
-
 
       {/* 📚 ส่วนบทความและคู่มือยอดนิยม */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-20">
@@ -768,8 +784,8 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-24 text-center text-xs text-slate-500 border-t border-slate-800/80 pt-8">
-        <p>© 2026 PropHubThai. คลังความรู้ด้านกองทุน(PropFirm) เพื่อเลือกกองทุนที่ใช่สำหรับคุณ</p>
-        <p className="mt-2 text-slate-600">การซื้อพอร์ตกองทุนมีความเสี่ยง โปรดศึกษาเงื่อนไขและกฎของแต่ละกองทุนอย่างละเอียดก่อนตัดสินใจ</p>
+        <p>© 2026 PropHub TH. รวบรวมข้อมูลเปรียบเทียบพอร์ตกองทุน Forex เพื่อเทรดเดอร์ไทย</p>
+        <p className="mt-2 text-slate-600">การซื้อพอร์ตสอบมีความเสี่ยง โปรดศึกษาเงื่อนไขและกฎของแต่ละกองทุนอย่างละเอียดก่อนตัดสินใจ</p>
       </footer>
     </main>
   );
