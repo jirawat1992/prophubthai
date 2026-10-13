@@ -14,6 +14,7 @@ export interface FilterState {
   noConsistencyRule: boolean;
   platform: string;
   profitSplit: string;
+  challengeProfit: string;
   noMinDays: boolean;
   noSlRequired: boolean;
   scalingPlan: boolean;
@@ -294,33 +295,53 @@ export default function PropMatcher({
                 </div>
               </div>
 
-              {/* Profit Split */}
+              {/* Profit Split แยก 2 Dropdown */}
               <div className="bg-slate-950/40 p-4 rounded-2xl border border-slate-800">
                 <span className="block text-xs font-bold text-slate-100 mb-3">
                   💰 ส่วนแบ่งกำไร (Profit Split):
                 </span>
-                <div className="flex flex-wrap gap-2">
-                  {[
-                    { id: "all", label: "มาตรฐาน (80%+)" },
-                    { id: "90", label: "สูงสุด 90%+" },
-                    { id: "challenge_profit", label: "🎁 มีกำไรช่วงสอบ 15%" },
-                  ].map((ps) => {
-                    const active = filters.profitSplit === ps.id;
-                    return (
-                      <button
-                        key={ps.id}
-                        type="button"
-                        onClick={() => updateFilter("profitSplit", ps.id)}
-                        className={`py-2 px-3 rounded-xl text-xs font-bold border transition-all ${
-                          active
-                            ? "bg-cyan-500/25 border-cyan-400 text-cyan-200 shadow-sm"
-                            : "bg-slate-800/70 border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white"
-                        }`}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {/* Dropdown 1: พอร์ตจริง */}
+                  <div>
+                    <label className="text-[11px] text-slate-400 font-semibold block mb-1.5">
+                      พอร์ตจริง (Funded Phase)
+                    </label>
+                    <div className="relative">
+                      <select
+                        value={filters.profitSplit}
+                        onChange={(e) => updateFilter("profitSplit", e.target.value)}
+                        className="w-full appearance-none bg-slate-800/95 hover:bg-slate-800 border border-slate-700 focus:border-cyan-400 text-slate-100 font-bold text-xs py-2.5 px-3 rounded-xl cursor-pointer transition-all outline-none"
                       >
-                        {ps.label}
-                      </button>
-                    );
-                  })}
+                        <option value="all">ทั้งหมด (ทุกอัตรา)</option>
+                        <option value="80">80%+</option>
+                        <option value="90">90%+</option>
+                        <option value="100">100% (รับเต็มจำนวน)</option>
+                      </select>
+                      <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 text-[10px] font-bold">
+                        ▼
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Dropdown 2: ช่วงสอบ */}
+                  <div>
+                    <label className="text-[11px] text-slate-400 font-semibold block mb-1.5">
+                      % แบ่งกำไรช่วงสอบ (Step 1 or 2)
+                    </label>
+                    <div className="relative">
+                      <select
+                        value={filters.challengeProfit}
+                        onChange={(e) => updateFilter("challengeProfit", e.target.value)}
+                        className="w-full appearance-none bg-slate-800/95 hover:bg-slate-800 border border-slate-700 focus:border-cyan-400 text-slate-100 font-bold text-xs py-2.5 px-3 rounded-xl cursor-pointer transition-all outline-none"
+                      >
+                        <option value="all">ไม่ระบุ (ทั้งหมด)</option>
+                        <option value="yes">🎁 มีส่วนแบ่งกำไรช่วงสอบ (เช่น 15%)</option>
+                      </select>
+                      <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 text-[10px] font-bold">
+                        ▼
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -355,7 +376,7 @@ export default function PropMatcher({
                 </div>
               </div>
 
-              {/* ⏱️ รอบการถอนกำไร 3 ปุ่ม (รวม On Demand) */}
+              {/* รอบถอนเงิน 3 ปุ่ม */}
               <div className="bg-slate-950/40 p-4 rounded-2xl border border-slate-800">
                 <span className="block text-xs font-bold text-slate-100 mb-3">
                   ⏱️ รอบการถอนกำไร (Payout):

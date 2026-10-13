@@ -442,6 +442,7 @@ const initialFilters: FilterState = {
   noConsistencyRule: false,
   platform: "all",
   profitSplit: "all",
+  challengeProfit: "all",
   noMinDays: false,
   noSlRequired: false,
   scalingPlan: false,
@@ -483,12 +484,14 @@ export default function Home() {
       if (filters.platform !== "all" && !firm.platforms.includes(filters.platform)) {
         return false;
       }
-      if (filters.profitSplit === "90" && firm.profitSplitRate < 90) {
-        return false;
-      }
-      if (filters.profitSplit === "challenge_profit" && !firm.hasChallengeProfit) {
-        return false;
-      }
+      // Profit Split
+      if (filters.profitSplit === "80" && firm.profitSplitRate < 80) return false;
+      if (filters.profitSplit === "90" && firm.profitSplitRate < 90) return false;
+      if (filters.profitSplit === "100" && firm.profitSplitRate < 100) return false;
+
+      // Challenge Profit
+      if (filters.challengeProfit === "yes" && !firm.hasChallengeProfit) return false;
+      
       if (filters.drawdownType === "balance" && firm.drawdownType !== "balance") {
         return false;
       }
