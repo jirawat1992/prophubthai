@@ -17,7 +17,7 @@ export interface FilterState {
   noMinDays: boolean;
   noSlRequired: boolean;
   scalingPlan: boolean;
-  hasRefund: boolean; // 👈 เพิ่มฟิลด์นี้
+  hasRefund: boolean;
 }
 
 interface PropMatcherProps {
@@ -252,7 +252,7 @@ export default function PropMatcher({
             <span>
               {filters.showAdvanced
                 ? "▲ ซ่อนตัวกรองเงื่อนไขเชิงลึก"
-                : "▼ ตัวกรองเงื่อนไขเชิงลึก (แพลตฟอร์ม, Refund คืนค่าสอบ, Drawdown, Profit Split)"}
+                : "▼ ตัวกรองเงื่อนไขเชิงลึก (แพลตฟอร์ม, Refund คืนค่าสอบ, รอบถอนเงิน, Profit Split)"}
             </span>
           </button>
         </div>
@@ -355,14 +355,16 @@ export default function PropMatcher({
                 </div>
               </div>
 
+              {/* ⏱️ รอบการถอนกำไร 3 ปุ่ม (รวม On Demand) */}
               <div className="bg-slate-950/40 p-4 rounded-2xl border border-slate-800">
                 <span className="block text-xs font-bold text-slate-100 mb-3">
                   ⏱️ รอบการถอนกำไร (Payout):
                 </span>
-                <div className="grid grid-cols-2 gap-2.5">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                   {[
                     { id: "all", label: "รอบปกติ (14 วัน)" },
-                    { id: "fast", label: "⚡ ถอนไวพิเศษ (5–8 วัน)" },
+                    { id: "fast", label: "⚡ ไวพิเศษ (5–8 วัน)" },
+                    { id: "on_demand", label: "🚀 ถอนทันที (On Demand)" },
                   ].map((po) => {
                     const active = filters.payoutSpeed === po.id;
                     return (
@@ -370,9 +372,9 @@ export default function PropMatcher({
                         key={po.id}
                         type="button"
                         onClick={() => updateFilter("payoutSpeed", po.id)}
-                        className={`py-2 px-3 rounded-xl text-xs font-bold border transition-all text-center ${
+                        className={`py-2 px-2 rounded-xl text-xs font-bold border transition-all text-center ${
                           active
-                            ? "bg-cyan-500/25 border-cyan-400 text-cyan-200"
+                            ? "bg-cyan-500/25 border-cyan-400 text-cyan-200 shadow-sm"
                             : "bg-slate-800/70 border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white"
                         }`}
                       >
@@ -390,7 +392,6 @@ export default function PropMatcher({
                 ⚖️ กฎเกณฑ์พิเศษและการคืนเงินค่าสอบ:
               </span>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
-                {/* 💰 ปุ่มกรอง Refund คืนเงินค่าสอบ 100% */}
                 <button
                   type="button"
                   onClick={() => updateFilter("hasRefund", !filters.hasRefund)}
